@@ -1,0 +1,12 @@
+# Ignore Aider internal state files
+.aider*
+exports/
+
+# Ignore raw forensic binaries and massive text dumps
+*.raw
+*.img
+*.pcap
+*memory_scan_results.txt
+
+# Keep structured ledger files
+!cases/*/triage_ledger.json

@@ -1,68 +1,484 @@
-import json
+#!/usr/bin/env python3
+"""
+DFIR Executive PDF Report Generator (Dynamic Version)
+Uses WeasyPrint to render styled HTML → PDF.
+Accepts a JSON file as an argument to dynamically build reports for any case.
+"""
+
 import sys
-import os
+import json
+import datetime
+from pathlib import Path
 
-def generate_report(json_path):
-    if not os.path.exists(json_path):
-        print(f"Error: File {json_path} not found.")
-        return
+try:
+    from weasyprint import HTML, CSS
+except ImportError:
+    raise SystemExit("weasyprint not installed. Run: pip3 install weasyprint")
 
-    with open(json_path, 'r') as f:
-        data = json.load(f)
 
-    # Extract metadata dynamically
-    report_title = data.get("title", "Incident Report")
-    source_file = data.get("source_file", "Unknown Source")
-    
-    html_content = f"""
-    <html>
-    <head>
-        <style>
-            table {{ width: 100%; border-collapse: collapse; }}
-            th, td {{ border: 1px solid black; padding: 8px; text-align: left; }}
-            th {{ background-color: #f2f2f2; }}
-        </style>
-    </head>
-    <body>
-        <h1>{report_title}</h1>
-        <p><strong>Source File:</strong> {source_file}</p>
-        <table>
-            <tr>
-                <th>Indicator</th>
-                <th>Description</th>
-                <th>Severity</th>
-            </tr>
-    """
+# ── Brand / Style ─────────────────────────────────────────────────────────────
 
-    # Loop through indicators dynamically
-    indicators = data.get("indicators", [])
-    for indicator in indicators:
-        name = indicator.get("name", "N/A")
-        description = indicator.get("description", "N/A")
-        severity = indicator.get("severity", "N/A")
+CSS_STYLE = """
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Roboto+Mono:wght@400;600&display=swap');
+
+@page {
+    size: A4;
+    margin: 0;
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-family: 'Inter', sans-serif;
+        font-size: 8pt;
+        color: #9ca3af;
+        margin-right: 2cm;
+        margin-bottom: 0.6cm;
+    }
+    @bottom-left {
+        content: "CONFIDENTIAL — DFIR INTERNAL USE ONLY";
+        font-family: 'Inter', sans-serif;
+        font-size: 8pt;
+        color: #9ca3af;
+        margin-left: 2cm;
+        margin-bottom: 0.6cm;
+    }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 9.5pt;
+    color: #1f2937;
+    background: #ffffff;
+    line-height: 1.55;
+}
+
+/* ── Cover / Header ── */
+.cover {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #1d4ed8 100%);
+    color: white;
+    padding: 2.8cm 2.2cm 2cm 2.2cm;
+    page-break-after: always;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cover-top { }
+
+.org-tag {
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #93c5fd;
+    margin-bottom: 0.5cm;
+}
+
+.report-type {
+    font-size: 10pt;
+    font-weight: 400;
+    color: #bfdbfe;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 0.3cm;
+}
+
+.cover h1 {
+    font-size: 28pt;
+    font-weight: 700;
+    line-height: 1.15;
+    color: #ffffff;
+    margin-bottom: 0.4cm;
+}
+
+.cover-subtitle {
+    font-size: 13pt;
+    font-weight: 300;
+    color: #bfdbfe;
+    margin-bottom: 1cm;
+}
+
+.cover-divider {
+    width: 60px;
+    height: 4px;
+    background: #3b82f6;
+    border-radius: 2px;
+    margin: 0.6cm 0 1cm 0;
+}
+
+.cover-meta {
+    display: table;
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 0.6cm;
+}
+.cover-meta-row { display: table-row; }
+.cover-meta-label {
+    display: table-cell;
+    font-size: 8pt;
+    font-weight: 600;
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.12cm 0.6cm 0.12cm 0;
+    white-space: nowrap;
+    width: 3cm;
+}
+.cover-meta-value {
+    display: table-cell;
+    font-size: 9pt;
+    color: #e0f2fe;
+    padding: 0.12cm 0;
+}
+
+.cover-bottom {
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 0.4cm;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.cover-classification {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #fbbf24;
+    text-transform: uppercase;
+}
+.cover-date {
+    font-size: 8pt;
+    color: #93c5fd;
+}
+
+/* ── Page header stripe ── */
+.page-header {
+    background: #0f172a;
+    color: white;
+    padding: 0.35cm 2.2cm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.page-header-title {
+    font-size: 8.5pt;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #93c5fd;
+}
+.page-header-case {
+    font-size: 8pt;
+    color: #6b7280;
+}
+
+/* ── Content area ── */
+.content {
+    padding: 0.8cm 2.2cm 1.5cm 2.2cm;
+}
+
+/* ── Section headings ── */
+h2 {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 0.8cm;
+    margin-bottom: 0.3cm;
+    padding-bottom: 0.15cm;
+    border-bottom: 2.5px solid #1d4ed8;
+    display: flex;
+    align-items: center;
+    gap: 0.3cm;
+}
+h2 .section-num {
+    background: #1d4ed8;
+    color: white;
+    font-size: 9pt;
+    font-weight: 700;
+    padding: 0.05cm 0.22cm;
+    border-radius: 3px;
+    min-width: 0.7cm;
+    text-align: center;
+}
+
+h3 {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-top: 0.5cm;
+    margin-bottom: 0.2cm;
+}
+
+p { margin-bottom: 0.25cm; }
+
+/* ── Executive Summary box ── */
+.exec-summary {
+    background: #eff6ff;
+    border-left: 4px solid #1d4ed8;
+    border-radius: 0 6px 6px 0;
+    padding: 0.4cm 0.6cm;
+    margin: 0.3cm 0 0.5cm 0;
+}
+.exec-summary p { margin-bottom: 0.15cm; font-size: 9.5pt; }
+.exec-summary p:last-child { margin-bottom: 0; }
+
+/* ── Tables ── */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.25cm 0 0.5cm 0;
+    font-size: 8.8pt;
+}
+thead tr {
+    background: #1e3a5f;
+    color: white;
+}
+thead th {
+    padding: 0.18cm 0.28cm;
+    text-align: left;
+    font-weight: 600;
+    font-size: 8pt;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+tbody tr:nth-child(even) { background: #f8fafc; }
+tbody tr:nth-child(odd)  { background: #ffffff; }
+tbody td {
+    padding: 0.15cm 0.28cm;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+}
+tbody tr:hover { background: #eff6ff; }
+
+/* ── Code / mono ── */
+code, .mono {
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+    font-size: 8pt;
+    background: #f1f5f9;
+    padding: 0.02cm 0.1cm;
+    border-radius: 3px;
+    color: #0f172a;
+}
+
+/* ── Metric cards ── */
+.metric-row {
+    display: flex;
+    gap: 0.3cm;
+    margin: 0.3cm 0;
+}
+.metric-card {
+    flex: 1;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-top: 3px solid #1d4ed8;
+    border-radius: 5px;
+    padding: 0.3cm 0.4cm;
+    text-align: center;
+}
+.metric-card.red-top  { border-top-color: #dc2626; }
+.metric-card.orange-top { border-top-color: #f97316; }
+.metric-card.green-top  { border-top-color: #16a34a; }
+.metric-number {
+    font-size: 16pt;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.1;
+}
+.metric-label {
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-top: 0.05cm;
+}
+
+/* ── Footer note ── */
+.footer-note {
+    margin-top: 0.8cm;
+    padding-top: 0.3cm;
+    border-top: 1px solid #e5e7eb;
+    font-size: 7.5pt;
+    color: #9ca3af;
+}
+"""
+
+def build_html(data: dict) -> str:
+    case_id    = data.get("case_id", "UNKNOWN-CASE")
+    client     = data.get("client", "Automated Triage Pipeline")
+    prepared   = data.get("prepared_by", "Autonomous DFIR Agent")
+    date_str   = data.get("date", datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d"))
+    title      = data.get("title", "Dynamic Triage Assessment")
+    subtitle   = data.get("subtitle", "Autonomous Forensic Report")
+    body_html  = data.get("body_html", "")
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<style>{CSS_STYLE}</style>
+</head>
+<body>
+
+<!-- ══ COVER PAGE ══ -->
+<div class="cover">
+  <div class="cover-top">
+    <div class="org-tag">Digital Forensics &amp; Incident Response</div>
+    <div class="report-type">Confidential Forensic Analysis</div>
+    <h1>{title}</h1>
+    <div class="cover-subtitle">{subtitle}</div>
+    <div class="cover-divider"></div>
+    <div class="cover-meta">
+      <div class="cover-meta-row">
+        <div class="cover-meta-label">Pipeline</div>
+        <div class="cover-meta-value">{client}</div>
+      </div>
+      <div class="cover-meta-row">
+        <div class="cover-meta-label">Case ID</div>
+        <div class="cover-meta-value">{case_id}</div>
+      </div>
+      <div class="cover-meta-row">
+        <div class="cover-meta-label">Prepared By</div>
+        <div class="cover-meta-value">{prepared}</div>
+      </div>
+      <div class="cover-meta-row">
+        <div class="cover-meta-label">Report Date</div>
+        <div class="cover-meta-value">{date_str} UTC</div>
+      </div>
+    </div>
+  </div>
+  <div class="cover-bottom">
+    <div class="cover-classification">&#9632; Confidential</div>
+    <div class="cover-date">Report generated {date_str}</div>
+  </div>
+</div>
+
+<!-- ══ BODY PAGES ══ -->
+<div class="page-header">
+  <div class="page-header-title">{title}</div>
+  <div class="page-header-case">Case: {case_id}</div>
+</div>
+<div class="content">
+{body_html}
+<div class="footer-note">
+  This report was produced automatically via an LLM-driven forensic pipeline.
+  Findings are based strictly on evidence present in the provided target at the time of analysis.
+</div>
+</div>
+
+</body>
+</html>"""
+
+def build_dynamic_body(json_data: dict) -> str:
+    """Builds the HTML sections dynamically based on the AI's JSON output."""
+    verdict = json_data.get("intent_verdict", "UNKNOWN").upper()
+    summary = json_data.get("summary", "No summary provided by the agent.")
+    target = json_data.get("target", "Unknown Evidence Target")
+    artifacts = json_data.get("artifacts", [])
+
+    # Set styles based on AI verdict
+    verdict_color_class = "green-top"
+    if verdict == "MALICIOUS":
+        verdict_color_class = "red-top"
+    elif verdict == "SUSPICIOUS":
+        verdict_color_class = "orange-top"
+
+    # Build the Artifacts Table dynamically
+    if len(artifacts) > 0:
+        artifacts_rows = ""
+        for art in artifacts:
+            name = art.get("name", "Unknown Artifact")
+            desc = art.get("description", "No description provided.")
+            artifacts_rows += f"<tr><td><code>{name}</code></td><td>{desc}</td></tr>"
         
-        html_content += f"""
-            <tr>
-                <td>{name}</td>
-                <td>{description}</td>
-                <td>{severity}</td>
-            </tr>
-        """
-
-    html_content += """
+        artifacts_table = f"""
+        <table>
+          <thead><tr><th>Artifact Name / Identifier</th><th>Forensic Analysis & Description</th></tr></thead>
+          <tbody>
+            {artifacts_rows}
+          </tbody>
         </table>
-    </body>
-    </html>
-    """
+        """
+    else:
+        artifacts_table = "<p><em>No specific malicious or suspicious artifacts were extracted by the agent during this scan.</em></p>"
 
-    output_filename = "report.html"
-    with open(output_filename, 'w') as f:
-        f.write(html_content)
+    html = f"""
+    <h2><span class="section-num">01</span> Executive Summary</h2>
+    <div class="exec-summary">
+      <p>{summary}</p>
+    </div>
+
+    <div class="metric-row">
+      <div class="metric-card {verdict_color_class}">
+        <div class="metric-number">{verdict}</div>
+        <div class="metric-label">Intent Verdict</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-number">{len(artifacts)}</div>
+        <div class="metric-label">Extracted Artifacts</div>
+      </div>
+    </div>
+
+    <h2><span class="section-num">02</span> System Profile & Evidence Scope</h2>
+    <table>
+      <thead><tr><th>Property</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Target Evidence Path</td><td><code>{target}</code></td></tr>
+        <tr><td>Analysis Timestamp</td><td>{datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")}</td></tr>
+        <tr><td>Analysis Tooling</td><td>Autonomous MCP Framework</td></tr>
+      </tbody>
+    </table>
+
+    <h2><span class="section-num">03</span> Extracted Artifacts Matrix</h2>
+    {artifacts_table}
+    """
     
-    print(f"Report generated successfully: {output_filename}")
+    return html
+
+
+def generate_report(data: dict, output_path: str) -> str:
+    html = build_html(data)
+    HTML(string=html).write_pdf(
+        output_path,
+        stylesheets=[CSS(string="")],
+        presentational_hints=True,
+    )
+    return output_path
+
 
 if __name__ == "__main__":
+    # Check if a JSON file was passed via command line
     if len(sys.argv) < 2:
-        print("Usage: python generate_pdf_report.py <path_to_json>")
-    else:
-        generate_report(sys.argv[1])
+        print("Error: You must provide a JSON file.")
+        print("Usage: python3 generate_pdf_report.py triage_report.json")
+        sys.exit(1)
+
+    json_filepath = sys.argv[1]
+
+    try:
+        with open(json_filepath, 'r') as f:
+            triage_data = json.load(f)
+    except Exception as e:
+        print(f"Error reading JSON file {json_filepath}: {e}")
+        sys.exit(1)
+
+    # Build the report data dynamically
+    ```python
+    from datetime import datetime, timezone
+    current_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    case_id = triage_data.get("case_id", "UNKNOWN-CASE")
+    
+    report_data = {
+        "case_id": case_id,
+        "date": current_date,
+        "title": "Dynamic Triage Assessment",
+        "subtitle": f"Target: {triage_data.get('target', 'Unknown')}",
+        "body_html": build_dynamic_body(triage_data),
+    }
+
+    # Save to the exports folder using the Case ID in the filename
+    exports_dir = Path("./exports/")
+    exports_dir.mkdir(parents=True, exist_ok=True)
+    output_pdf_path = exports_dir / f"Dynamic_Report_{case_id}.pdf"
+
+    generate_report(report_data, str(output_pdf_path))
+    print(f"[+] PDF incident report generated successfully: {output_pdf_path}")
