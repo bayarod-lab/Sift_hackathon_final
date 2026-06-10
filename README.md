@@ -25,6 +25,7 @@ graph TD
     J -->|Types APPROVE| L[Cryptographic Sign-off]
     L --> M[generate_pdf_report.py]
     M --> N[Final Verified Executive PDF Report]
+```
 ✨ Key Features & Hackathon Compliance
 Evidence-Agnostic Processing: Dynamically adapts to unstructured memory binaries (.raw) via Volatility 3 or structured cloud/endpoint telemetry streams (VIGÍA Canonical Format).
 
