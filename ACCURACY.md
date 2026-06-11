@@ -16,3 +16,10 @@ In accordance with Hackathon rules, this is an honest self-assessment of the age
 
 ### 4. Known Limitations
 While highly accurate at identifying anomalous process trees and documented IOCs, the agent currently relies on the depth of the initial Volatility extraction. If an artifact is deeply obfuscated in a registry hive not pulled by our initial script, the agent cannot currently request additional bespoke Volatility plugins to hunt it down.
+### 5. Architectural Enforcement vs. Prompt Adherence (Addressing IDE Read-Only Limitations)
+In accordance with Category 4 Hackathon requirements regarding Alternative Agentic IDEs (Aider), this section documents system behavior when the LLM attempts to violate read-only evidence constraints. 
+
+Because Aider relies heavily on prompt adherence, a hallucinating model might attempt to rewrite the source evidence instead of the ledger. Our pipeline mitigates this through a dual-layer failure state:
+* **The Application Layer (Aider `--read` flag):** The orchestrator injects the source evidence (`telemetry_source.json` or `memory_scan_results.txt`) into Aider's context window explicitly as a read-only file. If the LLM generates a unified diff attempting to alter the evidence, Aider's core logic automatically rejects the edit block, preventing file modification.
+* **The OS Layer (Decoupled Extraction):** To ensure zero spoliation risk, `analyze.sh` entirely separates extraction from cognition. The AI never touches the original `.raw` or `.json` case files. It only receives a secondary, sanitized copy of the extraction. 
+* **The Result:** If the model completely ignores the read-only prompt and attempts a destructive edit, the IDE rejects the diff, the Python validation loop catches the lack of updates to the `triage_ledger.json`, and the agent is forced into the self-correction REPL. Chain of custody for the underlying evidence remains mathematically unbroken.
