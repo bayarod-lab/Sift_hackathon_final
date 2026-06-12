@@ -1,0 +1,2 @@
+svchost.exe -> Image Path: %SystemRoot%\System32\svchost.exe | Parent: services.exe
+explorer.exe -> Image Path: %SystemRoot%\explorer.exe | Parent: userinit.exe

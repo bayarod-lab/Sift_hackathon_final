@@ -306,7 +306,7 @@ def build_html(data: dict) -> str:
     case_id    = data.get("case_id", "UNKNOWN-CASE")
     client     = data.get("client", "Automated Triage Pipeline")
     prepared   = data.get("prepared_by", "Autonomous DFIR Agent")
-    date_str   = data.get("date", datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d"))
+    date_str   = data.get("date", datetime.now().strftime("%Y-%m-%d"))
     title      = data.get("title", "Dynamic Triage Assessment")
     subtitle   = data.get("subtitle", "Autonomous Forensic Report")
     body_html  = data.get("body_html", "")
@@ -423,7 +423,7 @@ def build_dynamic_body(json_data: dict) -> str:
       <thead><tr><th>Property</th><th>Value</th></tr></thead>
       <tbody>
         <tr><td>Target Evidence Path</td><td><code>{target}</code></td></tr>
-        <tr><td>Analysis Timestamp</td><td>{datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")}</td></tr>
+        <tr><td>Analysis Timestamp</td><td>{datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")}</td></tr>
         <tr><td>Analysis Tooling</td><td>Autonomous MCP Framework</td></tr>
       </tbody>
     </table>
@@ -462,7 +462,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Build the report data dynamically
-    ```python
+
     from datetime import datetime, timezone
     current_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     case_id = triage_data.get("case_id", "UNKNOWN-CASE")

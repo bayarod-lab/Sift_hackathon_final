@@ -1,0 +1,5 @@
+Filetype  | Hex Start Content         | Start ASCII Translation
+----------|---------------------------|--------------------------
+exe       | 4D 5A 90 00               | MZ
+PDF       | 25 50 44 46               | %PDF
+zip       | 50 4B 03 04               | PK
