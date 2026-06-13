@@ -7,8 +7,9 @@ Accepts a JSON file as an argument to dynamically build reports for any case.
 
 import sys
 import json
-import datetime
+import re
 from pathlib import Path
+from datetime import datetime, timezone
 
 try:
     from weasyprint import HTML, CSS
@@ -200,16 +201,6 @@ h2 .section-num {
     text-align: center;
 }
 
-h3 {
-    font-size: 10.5pt;
-    font-weight: 700;
-    color: #1e3a5f;
-    margin-top: 0.5cm;
-    margin-bottom: 0.2cm;
-}
-
-p { margin-bottom: 0.25cm; }
-
 /* ── Executive Summary box ── */
 .exec-summary {
     background: #eff6ff;
@@ -219,19 +210,45 @@ p { margin-bottom: 0.25cm; }
     margin: 0.3cm 0 0.5cm 0;
 }
 .exec-summary p { margin-bottom: 0.15cm; font-size: 9.5pt; }
-.exec-summary p:last-child { margin-bottom: 0; }
+
+.coverage-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+.cov-title {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 5px;
+    display: block;
+}
+.cov-badge {
+    display: inline-block;
+    margin-right: 8px;
+    margin-top: 4px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 7.5pt;
+    border: 1px solid #ccc;
+}
+.cov-yes { background: #dcfce7; color: #166534; border-color: #86efac; }
+.cov-no { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
 
 /* ── Tables ── */
 table {
     width: 100%;
     border-collapse: collapse;
     margin: 0.25cm 0 0.5cm 0;
-    font-size: 8.8pt;
+    font-size: 8.5pt;
+    table-layout: fixed;
 }
-thead tr {
-    background: #1e3a5f;
-    color: white;
-}
+thead tr { background: #1e3a5f; color: white; }
 thead th {
     padding: 0.18cm 0.28cm;
     text-align: left;
@@ -240,31 +257,48 @@ thead th {
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
+/* CRITICAL FIX: Forces rows to stay bound to a single page context */
+tbody tr { 
+    page-break-inside: avoid !important; 
+}
 tbody tr:nth-child(even) { background: #f8fafc; }
 tbody tr:nth-child(odd)  { background: #ffffff; }
 tbody td {
     padding: 0.15cm 0.28cm;
     border-bottom: 1px solid #e5e7eb;
     vertical-align: top;
+    word-wrap: break-word;
 }
-tbody tr:hover { background: #eff6ff; }
 
-/* ── Code / mono ── */
-code, .mono {
+/* ── Badges & Tags ── */
+code {
     font-family: 'Roboto Mono', 'Courier New', monospace;
     font-size: 8pt;
     background: #f1f5f9;
     padding: 0.02cm 0.1cm;
     border-radius: 3px;
     color: #0f172a;
+    word-break: break-all;
 }
 
+.badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 7.5pt; font-weight: 600; text-transform: uppercase; }
+.badge-high { background: #fee2e2; color: #991b1b; }
+.badge-medium { background: #ffedd5; color: #9a3412; }
+.badge-low { background: #f1f5f9; color: #475569; }
+.badge-info { background: #e0f2fe; color: #075985; }
+
+.risk-badge { display: inline-block; margin-bottom: 4px; padding: 2px 6px; border-radius: 3px; font-size: 7.5pt; font-weight: bold; }
+.risk-high { background: #fef2f2; color: #b91c1c; border: 1px solid #f87171; }
+.risk-medium { background: #fffbeb; color: #b45309; border: 1px solid #fbbf24; }
+.risk-low { background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; }
+
+.pri-badge { display: block; width: fit-content; padding: 2px 6px; border-radius: 3px; font-size: 7.5pt; font-weight: bold; text-transform: uppercase; }
+.pri-high { background: #dc2626; color: white; }
+.pri-medium { background: #f59e0b; color: white; }
+.pri-low { background: #64748b; color: white; }
+
 /* ── Metric cards ── */
-.metric-row {
-    display: flex;
-    gap: 0.3cm;
-    margin: 0.3cm 0;
-}
+.metric-row { display: flex; gap: 0.3cm; margin: 0.3cm 0; }
 .metric-card {
     flex: 1;
     background: #f8fafc;
@@ -277,22 +311,9 @@ code, .mono {
 .metric-card.red-top  { border-top-color: #dc2626; }
 .metric-card.orange-top { border-top-color: #f97316; }
 .metric-card.green-top  { border-top-color: #16a34a; }
-.metric-number {
-    font-size: 16pt;
-    font-weight: 700;
-    color: #0f172a;
-    line-height: 1.1;
-}
-.metric-label {
-    font-size: 7.5pt;
-    font-weight: 600;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    margin-top: 0.05cm;
-}
+.metric-number { font-size: 16pt; font-weight: 700; color: #0f172a; line-height: 1.1; }
+.metric-label { font-size: 7.5pt; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.07em; margin-top: 0.05cm; }
 
-/* ── Footer note ── */
 .footer-note {
     margin-top: 0.8cm;
     padding-top: 0.3cm;
@@ -368,31 +389,119 @@ def build_html(data: dict) -> str:
 </body>
 </html>"""
 
-def build_dynamic_body(json_data: dict) -> str:
-    """Builds the HTML sections dynamically based on the AI's JSON output."""
+def extract_coverage(summary_text: str) -> tuple:
+    """Parses the 'Coverage: Filesystem=YES...' string out of the summary."""
+    coverage_html = ""
+    match = re.search(r'(Coverage:\s*.*?)(?:$|\n)', summary_text)
+    if match:
+        cov_str = match.group(1)
+        # Remove from main summary
+        summary_text = summary_text.replace(cov_str, '').strip()
+        
+        # Parse items
+        items = cov_str.replace("Coverage:", "").split(";")
+        badges = ""
+        for item in items:
+            if "=" in item:
+                k, v = item.split("=", 1)
+                k = k.strip()
+                v = v.strip().upper()
+                css_cls = "cov-yes" if "YES" in v else "cov-no"
+                badges += f'<span class="cov-badge {css_cls}"><b>{k}</b>: {v}</span>'
+        
+        if badges:
+            coverage_html = f'<div class="coverage-box"><span class="cov-title">Evidence Coverage Matrix</span>{badges}</div>'
+            
+    return summary_text, coverage_html
+
+def build_dynamic_body(json_data: dict, real_target_path: str) -> str:
     verdict = json_data.get("intent_verdict", "UNKNOWN").upper()
     summary = json_data.get("summary", "No summary provided by the agent.")
-    target = json_data.get("target", "Unknown Evidence Target")
     artifacts = json_data.get("artifacts", [])
+
+    # --- Extract MITRE TTPs ---
+    mitre_ttps = json_data.get("mitre_ttps", [])
+    mitre_html = ""
+    if mitre_ttps:
+        mitre_html = f'<div style="margin-bottom: 15px; font-size: 8.5pt; color: #334155;"><b>Identified MITRE ATT&CK Techniques:</b> <code>{", ".join(mitre_ttps)}</code></div>'
+
+    # Extract coverage matrix visually
+    summary, coverage_html = extract_coverage(summary)
 
     # Set styles based on AI verdict
     verdict_color_class = "green-top"
-    if verdict == "MALICIOUS":
+    if verdict == "MALICIOUS" or verdict == "CONFIRMED MALICIOUS":
         verdict_color_class = "red-top"
     elif verdict == "SUSPICIOUS":
         verdict_color_class = "orange-top"
 
-    # Build the Artifacts Table dynamically
+    # Build the Artifacts Table dynamically with strict column matching (5 columns total)
     if len(artifacts) > 0:
         artifacts_rows = ""
         for art in artifacts:
-            name = art.get("name", "Unknown Artifact")
-            desc = art.get("description", "No description provided.")
-            artifacts_rows += f"<tr><td><code>{name}</code></td><td>{desc}</td></tr>"
+            # Strip hidden newlines to prevent PDF table wrapping errors
+            name = str(art.get("name", "Unknown Artifact")).replace("\n", " ").replace("\r", " ").strip()
+            desc = str(art.get("description", "No description provided.")).replace("\n", " ").replace("\r", " ").strip()
+            
+            # --- RENDER EXPLICIT IOC BLOCK ---
+            iocs = art.get("iocs", [])
+            if iocs and isinstance(iocs, list):
+                # Clean out any empty strings
+                valid_iocs = [i.strip() for i in iocs if i.strip()]
+                if valid_iocs:
+                    ioc_str = "<br>".join(valid_iocs)
+                    # Append a red, monospaced alert box directly into the description column
+                    desc += f'<div style="margin-top: 8px; padding: 6px; background: #fee2e2; border-left: 3px solid #ef4444; border-radius: 3px; font-family: monospace; font-size: 7.5pt; word-wrap: break-word; color: #7f1d1d;"><b>INDICATORS OF COMPROMISE:</b><br>{ioc_str}</div>'
+            rec_val = str(art.get("recommended_validation", "Manual review required.")).replace("\n", " ").replace("\r", " ").strip()
+            
+            # DEFENSIVE PROGRAMMING FALLBACK: Support both 'confidence' and 'confidence_level'
+            conf = str(art.get("confidence", art.get("confidence_level", "Low"))).strip().title()
+            
+            # --- Extract Risk Score safely ---
+            risk_val = art.get("risk_score", 0)
+            try: 
+                risk_val = int(risk_val)
+            except (ValueError, TypeError): 
+                risk_val = 0
+            
+            risk_html = str(risk_val) + "/100"
+            # SANITY SCRUBBER: Strip out any accidental LaTeX math markers ($) injected by the model
+            risk_html = risk_html.replace("$", "")
+            
+            pri_val = art.get("priority", "Low").title()
+            
+            # Render Risk Badge
+            risk_cls = "risk-low"
+            if risk_val >= 75: risk_cls = "risk-high"
+            elif risk_val >= 40: risk_cls = "risk-medium"
+            
+            # Render Priority Badge
+            pri_cls = "pri-low"
+            if pri_val == "High": pri_cls = "pri-high"
+            elif pri_val == "Medium": pri_cls = "pri-medium"
+            
+            risk_html = f'<div class="risk-badge {risk_cls}">Risk: {risk_val}/100</div><div class="pri-badge {pri_cls}">{pri_val} Priority</div>'
+
+            # Render Confidence Badge
+            conf_badge = f'<span class="badge badge-info">{conf}</span>'
+            if conf.upper() == "HIGH":
+                conf_badge = f'<span class="badge badge-high">{conf}</span>'
+            elif conf.upper() == "MEDIUM":
+                conf_badge = f'<span class="badge badge-medium">{conf}</span>'
+            elif conf.upper() == "LOW":
+                conf_badge = f'<span class="badge badge-low">{conf}</span>'
+
+            artifacts_rows += f"<tr><td><code>{name}</code></td><td>{desc}</td><td>{risk_html}</td><td>{conf_badge}</td><td>{rec_val}</td></tr>"
         
         artifacts_table = f"""
         <table>
-          <thead><tr><th>Artifact Name / Identifier</th><th>Forensic Analysis & Description</th></tr></thead>
+          <thead><tr>
+            <th style="width: 20%;">Artifact / Finding</th>
+            <th style="width: 35%;">Forensic Observation</th>
+            <th style="width: 15%;">Risk &amp; Priority</th>
+            <th style="width: 12%;">Confidence</th>
+            <th style="width: 18%;">Recommended Validation</th>
+          </tr></thead>
           <tbody>
             {artifacts_rows}
           </tbody>
@@ -406,36 +515,38 @@ def build_dynamic_body(json_data: dict) -> str:
     <div class="exec-summary">
       <p>{summary}</p>
     </div>
+    {coverage_html}
+    {mitre_html}
 
     <div class="metric-row">
       <div class="metric-card {verdict_color_class}">
         <div class="metric-number">{verdict}</div>
-        <div class="metric-label">Intent Verdict</div>
+        <div class="metric-label">Assessed Intent Verdict</div>
       </div>
       <div class="metric-card">
         <div class="metric-number">{len(artifacts)}</div>
-        <div class="metric-label">Extracted Artifacts</div>
+        <div class="metric-label">Extracted Findings</div>
       </div>
     </div>
 
-    <h2><span class="section-num">02</span> System Profile & Evidence Scope</h2>
+    <h2><span class="section-num">02</span> System Profile &amp; Evidence Scope</h2>
     <table>
-      <thead><tr><th>Property</th><th>Value</th></tr></thead>
+      <thead><tr><th style="width: 25%;">Property</th><th>Value</th></tr></thead>
       <tbody>
-        <tr><td>Target Evidence Path</td><td><code>{target}</code></td></tr>
-        <tr><td>Analysis Timestamp</td><td>{datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")}</td></tr>
+        <tr><td>Target Evidence Path</td><td><code>{real_target_path}</code></td></tr>
+        <tr><td>Analysis Timestamp</td><td>{datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}</td></tr>
         <tr><td>Analysis Tooling</td><td>Autonomous MCP Framework</td></tr>
       </tbody>
     </table>
 
-    <h2><span class="section-num">03</span> Extracted Artifacts Matrix</h2>
+    <h2><span class="section-num">03</span> Extracted Findings Matrix</h2>
     {artifacts_table}
     """
     
     return html
 
 
-def generate_report(data: dict, output_path: str) -> str:
+def generate_report(data: dict, output_path: str, real_target_path: str) -> str:
     html = build_html(data)
     HTML(string=html).write_pdf(
         output_path,
@@ -446,7 +557,6 @@ def generate_report(data: dict, output_path: str) -> str:
 
 
 if __name__ == "__main__":
-    # Check if a JSON file was passed via command line
     if len(sys.argv) < 2:
         print("Error: You must provide a JSON file.")
         print("Usage: python3 generate_pdf_report.py triage_report.json")
@@ -461,9 +571,20 @@ if __name__ == "__main__":
         print(f"Error reading JSON file {json_filepath}: {e}")
         sys.exit(1)
 
-    # Build the report data dynamically
+    # Pull the real target path from the chain_of_custody log to fix "Target: Unknown"
+    case_dir = Path(json_filepath).parent
+    coc_path = case_dir / "chain_of_custody.txt"
+    real_target = triage_data.get("target", "Unknown")
+    
+    if coc_path.exists():
+        try:
+            for line in coc_path.read_text().splitlines():
+                if line.startswith("Source File:"):
+                    real_target = line.split("Source File:", 1)[1].strip()
+                    break
+        except Exception:
+            pass
 
-    from datetime import datetime, timezone
     current_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     case_id = triage_data.get("case_id", "UNKNOWN-CASE")
     
@@ -471,14 +592,13 @@ if __name__ == "__main__":
         "case_id": case_id,
         "date": current_date,
         "title": "Dynamic Triage Assessment",
-        "subtitle": f"Target: {triage_data.get('target', 'Unknown')}",
-        "body_html": build_dynamic_body(triage_data),
+        "subtitle": "Autonomous Forensic Report",
+        "body_html": build_dynamic_body(triage_data, real_target),
     }
 
-    # Save to the exports folder using the Case ID in the filename
     exports_dir = Path("./exports/")
     exports_dir.mkdir(parents=True, exist_ok=True)
     output_pdf_path = exports_dir / f"Dynamic_Report_{case_id}.pdf"
 
-    generate_report(report_data, str(output_pdf_path))
+    generate_report(report_data, str(output_pdf_path), real_target)
     print(f"[+] PDF incident report generated successfully: {output_pdf_path}")

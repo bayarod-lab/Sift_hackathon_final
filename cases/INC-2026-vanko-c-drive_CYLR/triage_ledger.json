@@ -1,0 +1,30 @@
+{
+  "case_id": "vanko-c-drive_CYLR",
+  "target": "Unknown",
+  "intent_verdict": "Suspicious",
+  "summary": "Analysis of the provided filesystem artifacts identified standard application components (WhatsApp, Google Chrome) alongside a shortcut for an FTP server application (smallftpd-1.0.3-fix.lnk). The presence of an FTP server in a potential data exfiltration context warrants further investigation. Coverage: Filesystem=YES; Registry=NO; EventLogs=NO; Note: Lack of Registry and EventLogs limits ability to confirm execution or persistence.",
+  "artifacts": [
+    {
+      "name": "smallftpd-1.0.3-fix.lnk",
+      "type": "shortcut",
+      "value": "smallftpd-1.0.3-fix.lnk",
+      "description": "Shortcut to an FTP server application located at Users/defaultprinter/..., potentially used for unauthorized data transfer or hosting files for external access.",
+      "confidence": "medium",
+      "recommended_validation": "Verify installation path and execution logs.",
+      "risk_score": 60,
+      "priority": "High",
+      "review_status": "pending"
+    },
+    {
+      "name": "System and Application Components",
+      "type": "executable/dll",
+      "value": "Multiple",
+      "description": "Standard system and application files including WhatsApp, Chrome components, and update utilities.",
+      "confidence": "high",
+      "recommended_validation": "None required; baseline activity.",
+      "risk_score": 2,
+      "priority": "Low",
+      "review_status": "pending"
+    }
+  ]
+}

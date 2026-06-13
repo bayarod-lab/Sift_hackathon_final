@@ -1,0 +1,7 @@
+Technical Audit Findings - INC-2026-VIGIA-REAL-010
+
+1. Missing Actor/Intent Context: The triage ledger fails to capture the involvement of the criminal group 'KRYPTIX' and the specific negotiation dynamics (renegotiation attempt/price increase). This context is vital for establishing the intent and potential organized crime nexus, rather than just isolated industrial espionage.
+
+2. Missing Forensic Attribution: The ledger omits the device identification (Motorola Droid) found in the EXIF metadata. This is a critical forensic artifact for verifying the source of the exfiltrated files and establishing device attribution.
+
+3. Victim Identification: The ledger focuses exclusively on the suspect (Norby) and fails to identify the victim (Yob Taog) whose device was compromised, which is a significant gap in the incident narrative.

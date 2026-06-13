@@ -1,0 +1,56 @@
+[
+  {
+    "artifact_type": "file",
+    "artifact_name": "SysInternals.exe",
+    "artifact_value": "C:\\Users\\Public\\Downloads\\SysInternals.exe",
+    "source_file": "cases/INC-2026-VIGIA-REAL-004/extractions/telemetry_source.json",
+    "confidence": "high",
+    "iocs": [
+      "C:\\Users\\Public\\Downloads\\SysInternals.exe",
+      "72e6d1728a546c2f3ee32c063ed09fa6ba8c46ac33b0dd2e354087c1ad26ef48"
+    ]
+  },
+  {
+    "artifact_type": "network",
+    "artifact_name": "Malicious Download URL",
+    "artifact_value": "http://www.malware430.com/html/VMwareUpdate.exe",
+    "source_file": "cases/INC-2026-VIGIA-REAL-004/extractions/telemetry_source.json",
+    "confidence": "high",
+    "iocs": [
+      "http://www.malware430.com/html/VMwareUpdate.exe",
+      "www.malware430.com"
+    ]
+  },
+  {
+    "artifact_type": "file",
+    "artifact_name": "vmtoolsIO.exe",
+    "artifact_value": "c:\\Windows\\vmtoolsIO.exe",
+    "source_file": "cases/INC-2026-VIGIA-REAL-004/extractions/telemetry_source.json",
+    "confidence": "high",
+    "iocs": [
+      "c:\\Windows\\vmtoolsIO.exe"
+    ]
+  },
+  {
+    "artifact_type": "service",
+    "artifact_name": "VMwareIOHelperService",
+    "artifact_value": "VMwareIOHelperService",
+    "source_file": "cases/INC-2026-VIGIA-REAL-004/extractions/telemetry_source.json",
+    "confidence": "high",
+    "iocs": [
+      "VMwareIOHelperService"
+    ]
+  },
+  {
+    "artifact_type": "configuration",
+    "artifact_name": "Hosts File Modification",
+    "artifact_value": "sysinternals.com and malware430.com redirected to 192.168.x.x",
+    "source_file": "cases/INC-2026-VIGIA-REAL-004/extractions/telemetry_source.json",
+    "confidence": "high",
+    "iocs": [
+      "sysinternals.com",
+      "malware430.com",
+      "192.168.x.x"
+    ]
+  }
+]

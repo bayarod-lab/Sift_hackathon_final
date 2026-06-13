@@ -1,0 +1,13 @@
+TECHNICAL REVIEW: INC-2026-VIGIA-REAL-005
+REVIEWER: Senior DFIR Examiner
+DATE: 2026-05-29
+
+Junior Analyst, your triage ledger is superficial and fails to align with our established forensic methodologies. You have treated these artifacts as static objects rather than dynamic evidence requiring correlation. Address the following gaps immediately:
+
+1. FAILURE TO ADDRESS FORENSIC ANOMALIES (Sleuthkit Methodology):
+You have noted the existence of the AES-encrypted README file but completely ignored the forensic anomaly explicitly flagged in the telemetry: "Possible unencrypted version in system cache." Per our Sleuthkit SKILL.md, your priority must be the recovery of data from unallocated space or system caches. You have also failed to outline a recovery strategy for the BitLocker volume 'R2D2'. Simply noting the volume exists is insufficient; you must document the required steps to locate recovery keys (AD, USB, or backup files) as per standard forensic workflow.
+
+2. LACK OF EXECUTION CORRELATION (Windows Artifacts Methodology):
+You are treating these encrypted files as isolated entities. You have failed to correlate the creation and access of these files with execution evidence. Per our Windows Artifacts SKILL.md, you must parse Prefetch, Shimcache, and Amcache to identify the specific process responsible for creating the 'keys' file and the BitLocker volume. Without this correlation, you cannot establish a timeline of activity or identify the binary responsible for the anti-forensic measures. You must also check Registry artifacts (e.g., MountPoints2) to link the BitLocker volume to specific user activity.
+
+Revise your triage plan to include these specific investigative steps.

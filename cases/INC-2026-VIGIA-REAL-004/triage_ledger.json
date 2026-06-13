@@ -1,0 +1,84 @@
+{
+  "case_id": "VIGIA-REAL-004",
+  "target": "Unknown",
+  "intent_verdict": "Malicious",
+  "summary": "The investigation identified multiple indicators of compromise including a suspicious executable download, persistence mechanism via a service, and unauthorized hosts file modification. The activity suggests a malware infection chain. Coverage: Filesystem=YES; Registry=NO; EventLogs=NO;",
+  "case_confidence": 90,
+  "mitre_ttps": [],
+  "artifacts": [
+    {
+      "name": "SysInternals.exe",
+      "type": "file",
+      "value": "C:\\Users\\Public\\Downloads\\SysInternals.exe",
+      "description": "Suspicious executable found in public downloads directory.",
+      "confidence": "high",
+      "recommended_validation": "Verify file hash against known good repositories and perform static analysis.",
+      "risk_score": 85,
+      "priority": "High",
+      "review_status": "completed",
+      "iocs": [
+        "C:\\Users\\Public\\Downloads\\SysInternals.exe",
+        "72e6d1728a546c2f3ee32c063ed09fa6ba8c46ac33b0dd2e354087c1ad26ef48"
+      ]
+    },
+    {
+      "name": "Malicious Download URL",
+      "type": "network",
+      "value": "http://www.malware430.com/html/VMwareUpdate.exe",
+      "description": "External URL associated with malicious file download.",
+      "confidence": "high",
+      "recommended_validation": "Check firewall logs for connection attempts and block domain.",
+      "risk_score": 90,
+      "priority": "High",
+      "review_status": "completed",
+      "iocs": [
+        "http://www.malware430.com/html/VMwareUpdate.exe",
+        "www.malware430.com"
+      ]
+    },
+    {
+      "name": "vmtoolsIO.exe",
+      "type": "file",
+      "value": "c:\\Windows\\vmtoolsIO.exe",
+      "description": "Suspicious executable located in Windows directory.",
+      "confidence": "high",
+      "recommended_validation": "Check file signature and perform behavioral analysis.",
+      "risk_score": 80,
+      "priority": "High",
+      "review_status": "completed",
+      "iocs": [
+        "c:\\Windows\\vmtoolsIO.exe"
+      ]
+    },
+    {
+      "name": "VMwareIOHelperService",
+      "type": "service",
+      "value": "VMwareIOHelperService",
+      "description": "Service created for potential persistence.",
+      "confidence": "high",
+      "recommended_validation": "Inspect service configuration and associated binary path.",
+      "risk_score": 85,
+      "priority": "High",
+      "review_status": "completed",
+      "iocs": [
+        "VMwareIOHelperService"
+      ]
+    },
+    {
+      "name": "Hosts File Modification",
+      "type": "configuration",
+      "value": "sysinternals.com and malware430.com redirected to 192.168.x.x",
+      "description": "Unauthorized modification of hosts file to redirect traffic.",
+      "confidence": "high",
+      "recommended_validation": "Review hosts file content and check for unauthorized changes.",
+      "risk_score": 75,
+      "priority": "Medium",
+      "review_status": "completed",
+      "iocs": [
+        "sysinternals.com",
+        "malware430.com",
+        "192.168.x.x"
+      ]
+    }
+  ]
+}

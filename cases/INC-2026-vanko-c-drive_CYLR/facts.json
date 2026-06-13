@@ -1,0 +1,72 @@
+[
+  {
+    "artifact_type": "executable",
+    "artifact_name": "WhatsApp.exe",
+    "artifact_value": "WhatsApp.exe",
+    "source_file": "cases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage/vanko-c-drive.CYLR/G/Users/PC User/AppData/Local/WhatsApp/app-0.2.936/WhatsApp.exe",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "executable",
+    "artifact_name": "squirrel.exe",
+    "artifact_value": "squirrel.exe",
+    "source_file": "cases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage/vanko-c-drive.CYLR/G/Users/PC User/AppData/Local/WhatsApp/app-0.2.936/squirrel.exe",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "executable",
+    "artifact_name": "Update.exe",
+    "artifact_value": "Update.exe",
+    "source_file": "cases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage/vanko-c-drive.CYLR/G/Users/PC User/AppData/Local/WhatsApp/Update.exe",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "executable",
+    "artifact_name": "WhatsApp.exe",
+    "artifact_value": "WhatsApp.exe",
+    "source_file": "cases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage/vanko-c-drive.CYLR/G/Users/PC User/AppData/Local/WhatsApp/app-0.2.1061/WhatsApp.exe",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "executable",
+    "artifact_name": "software_reporter_tool.exe",
+    "artifact_value": "software_reporter_tool.exe",
+    "source_file": "cases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage/vanko-c-drive.CYLR/G/Users/PC User/AppData/Local/Google/Chrome/User Data/SwReporter/17.96.0/software_reporter_tool.exe",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "executable",
+    "artifact_name": "pepflashplayer.dll",
+    "artifact_value": "pepflashplayer.dll",
+    "source_file": "cases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage/vanko-c-drive.CYLR/G/Users/PC User/AppData/Local/Google/Chrome/User Data/PepperFlash/25.0.0.127/pepflashplayer.dll",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "executable",
+    "artifact_name": "pnacl_public_x86_64_pnacl_llc_nexe",
+    "artifact_value": "pnacl_public_x86_64_pnacl_llc_nexe",
+    "source_file": "cases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage/vanko-c-drive.CYLR/G/Users/PC User/AppData/Local/Google/Chrome/User Data/pnacl/0.57.44.2492/_platform_specific/x86_64/pnacl_public_x86_64_pnacl_llc_nexe",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "executable",
+    "artifact_name": "pnacl_public_x86_64_pnacl_sz_nexe",
+    "artifact_value": "pnacl_public_x86_64_pnacl_sz_nexe",
+    "source_file": "cases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage/vanko-c-drive.CYLR/G/Users/PC User/AppData/Local/Google/Chrome/User Data/pnacl/0.57.44.2492/_platform_specific/x86_64/pnacl_public_x86_64_pnacl_sz_nexe",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "executable",
+    "artifact_name": "pnacl_public_x86_64_ld_nexe",
+    "artifact_value": "pnacl_public_x86_64_ld_nexe",
+    "source_file": "cases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage/vanko-c-drive.CYLR/G/Users/PC User/AppData/Local/Google/Chrome/User Data/pnacl/0.57.44.2492/_platform_specific/x86_64/pnacl_public_x86_64_ld_nexe",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "shortcut",
+    "artifact_name": "smallftpd-1.0.3-fix.lnk",
+    "artifact_value": "smallftpd-1.0.3-fix.lnk",
+    "source_file": "cases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage/vanko-c-drive.CYLR/G/Users/defaultprinter/AppData/Roaming/Microsoft/Windows/Recent/smallftpd-1.0.3-fix.lnk",
+    "confidence": "medium"
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "case_id": "VIGIA-REAL-005",
+  "target": "Jane",
+  "intent_verdict": "Assessed Intent: Data Concealment / Anti-Forensics",
+  "summary": "The subject is utilizing multi-layered encryption techniques including AES, BitLocker, and GPG/PGP to obscure sensitive data. This behavior is consistent with deliberate anti-forensic measures. The investigation must move beyond static analysis to include: 1) Recovery of unencrypted artifacts from system caches (specifically for the README file); 2) Execution correlation via Prefetch, Shimcache, and Amcache to identify the binary responsible for encryption; 3) Registry analysis (e.g., MountPoints2) to link the BitLocker volume to user activity; and 4) Systematic recovery attempts for the BitLocker volume 'R2D2' via AD, USB, or backup key locations.",
+  "artifacts": [
+    {
+      "name": "README file",
+      "type": "file",
+      "value": "Documents/README",
+      "description": "AES-encrypted file. Forensic priority: Search unallocated space and system caches for unencrypted versions.",
+      "review_status": "investigation_required"
+    },
+    {
+      "name": "GPG/PGP keys",
+      "type": "file",
+      "value": "Downloads/keys",
+      "description": "Asymmetric encrypted communication keys. Forensic priority: Correlate creation with execution artifacts (Prefetch/Shimcache/Amcache) to identify the responsible process.",
+      "review_status": "investigation_required"
+    },
+    {
+      "name": "BitLocker volume",
+      "type": "volume",
+      "value": "R2D2",
+      "description": "Full disk encryption. Forensic priority: Locate recovery keys (AD, USB, or backup files) and analyze Registry (MountPoints2) to link volume to user activity.",
+      "review_status": "investigation_required"
+    }
+  ]
+}

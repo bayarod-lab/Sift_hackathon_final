@@ -1,0 +1,12 @@
+Audit Review: INC-2026-vanko-c-drive_CYLR
+
+1. Technical Accuracy:
+The ledger accurately reflects the extracted artifacts. Grouping the standard application components (WhatsApp, Chrome) is appropriate and effectively reduces noise in the triage process.
+
+2. Risk Assessment:
+The risk scoring for the FTP utility (smallftpd-1.0.3-fix.lnk) adheres to the provided guardrails. It is correctly identified as a potential exfiltration vector and maintains a High priority status.
+
+3. Areas for Improvement:
+- Technical Detail: You identified 'smallftpd' as an FTP utility. Be more specific: SmallFTPd is an FTP *server* application, not just a client. This distinction is critical for determining if the host was used to exfiltrate data or to host files for external access.
+- Attribution: The ledger description for the shortcut should include the user path (Users/defaultprinter/...). This is vital for attributing the activity to a specific user account.
+- Scope: Your summary correctly notes that Registry and EventLogs were not analyzed. Ensure that in future reports, you explicitly state that the lack of these artifacts limits the ability to confirm execution (e.g., Prefetch/Shimcache) or persistence.

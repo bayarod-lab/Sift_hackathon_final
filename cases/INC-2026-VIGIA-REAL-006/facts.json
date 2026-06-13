@@ -1,0 +1,58 @@
+[
+  {
+    "artifact_type": "email_header",
+    "artifact_name": "Return-Path",
+    "artifact_value": "simsong@xy.dreamhostps.com",
+    "source_file": "cases/INC-2026-VIGIA-REAL-006/extractions/telemetry_source.json",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "email_header",
+    "artifact_name": "Reply-To",
+    "artifact_value": "tuckergorge@gmail.com",
+    "source_file": "cases/INC-2026-VIGIA-REAL-006/extractions/telemetry_source.json",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "file_metadata",
+    "artifact_name": "m57biz.xls",
+    "artifact_value": "C:/Documents and Settings/Jean/Desktop/m57biz.xls",
+    "source_file": "cases/INC-2026-VIGIA-REAL-006/extractions/telemetry_source.json",
+    "confidence": "high"
+  },
+  {
+    "artifact_type": "process_list",
+    "artifact_name": "ipconfig.exe",
+    "artifact_value": "deleted",
+    "source_file": "cases/INC-2026-VIGIA-REAL-006/extractions/telemetry_source.json",
+    "confidence": "medium"
+  },
+  {
+    "artifact_type": "process_list",
+    "artifact_name": "net.exe",
+    "artifact_value": "deleted",
+    "source_file": "cases/INC-2026-VIGIA-REAL-006/extractions/telemetry_source.json",
+    "confidence": "medium"
+  },
+  {
+    "artifact_type": "software_installation",
+    "artifact_name": "AIM6",
+    "artifact_value": "installed with suspicious toolbar bundles",
+    "source_file": "cases/INC-2026-VIGIA-REAL-006/extractions/telemetry_source.json",
+    "confidence": "medium"
+  },
+  {
+    "artifact_type": "cached_file",
+    "artifact_name": "rcstatus.htm",
+    "artifact_value": "cached HTML file",
+    "source_file": "cases/INC-2026-VIGIA-REAL-006/extractions/telemetry_source.json",
+    "confidence": "medium"
+  },
+  {
+    "artifact_type": "cached_file",
+    "artifact_name": "InstallStatus[1].htm",
+    "artifact_value": "cached HTML file",
+    "source_file": "cases/INC-2026-VIGIA-REAL-006/extractions/telemetry_source.json",
+    "confidence": "medium"
+  }
+]

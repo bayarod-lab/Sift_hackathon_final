@@ -1,0 +1,50 @@
+{
+"case_id": "VIGIA-REAL-010",
+"target": "SwiftLogic Inc. / Palomino product documents",
+"intent_verdict": "Industrial Espionage / Organized Crime",
+"summary": "The investigation confirms a case of industrial espionage involving the exfiltration of confidential PDF documents related to the Palomino product. Evidence indicates malware was installed on the victim's (Yob Taog) phone to facilitate systematic downloads and exfiltration to an external server (50.56.29.109). The suspect, Donald Norby, engaged in negotiations for the sale of these documents, including a failed renegotiation attempt to increase the price, which may be linked to the criminal group 'KRYPTIX'. Norby's subsequent death under violent circumstances suggests a potential organized crime nexus.",
+"artifacts": [
+{
+"name": "Exfiltration Server",
+"type": "network_indicator",
+"value": "50.56.29.109",
+"description": "Hardcoded external server IP found in malware code used for systematic PDF exfiltration.",
+"review_status": "pending"
+},
+{
+"name": "Malware Activity",
+"type": "log_entry",
+"value": "SMS/Malware C&C",
+"description": "SMS messages confirm malware installation and periodic exfiltration of confidential documents.",
+"review_status": "pending"
+},
+{
+"name": "Confidential Documents",
+"type": "file_metadata",
+"value": "Palomino product PDFs",
+"description": "Confidential SwiftLogic PDF files identified on the device SD card.",
+"review_status": "pending"
+},
+{
+"name": "Reconnaissance Activity",
+"type": "browser_history",
+"value": "SwiftLogic employee searches",
+"description": "Browser history indicates prior reconnaissance on target company employees.",
+"review_status": "pending"
+},
+{
+"name": "Device Identification",
+"type": "forensic_artifact",
+"value": "Motorola Droid",
+"description": "EXIF metadata from photos on the device confirms the hardware as a Motorola Droid, linking the device to the exfiltrated files.",
+"review_status": "pending"
+},
+{
+"name": "Criminal Nexus",
+"type": "intelligence_report",
+"value": "KRYPTIX Group",
+"description": "Evidence of negotiation dynamics and suspect's violent death suggests involvement of the criminal group KRYPTIX.",
+"review_status": "pending"
+}
+]
+}

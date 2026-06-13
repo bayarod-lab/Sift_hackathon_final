@@ -1,0 +1,39 @@
+[
+  {
+    "sequence": 1,
+    "event_description": "Initial access via malicious download of executable disguised as legitimate software.",
+    "artifacts_involved": [
+      "http://www.malware430.com/html/VMwareUpdate.exe",
+      "www.malware430.com"
+    ],
+    "mitre_ttp": "T1189 - Drive-by Compromise"
+  },
+  {
+    "sequence": 2,
+    "event_description": "Execution of malicious payload on the host system.",
+    "artifacts_involved": [
+      "C:\\Users\\Public\\Downloads\\SysInternals.exe",
+      "72e6d1728a546c2f3ee32c063ed09fa6ba8c46ac33b0dd2e354087c1ad26ef48"
+    ],
+    "mitre_ttp": "T1204.002 - User Execution: Malicious File"
+  },
+  {
+    "sequence": 3,
+    "event_description": "Persistence established via installation of a malicious service.",
+    "artifacts_involved": [
+      "c:\\Windows\\vmtoolsIO.exe",
+      "VMwareIOHelperService"
+    ],
+    "mitre_ttp": "T1543.003 - Create or Modify System Process: Windows Service"
+  },
+  {
+    "sequence": 4,
+    "event_description": "System configuration modification to redirect network traffic for command and control or data exfiltration.",
+    "artifacts_involved": [
+      "sysinternals.com",
+      "malware430.com",
+      "192.168.x.x"
+    ],
+    "mitre_ttp": "T1498.001 - Network Denial of Service: Direct Network Flood"
+  }
+]

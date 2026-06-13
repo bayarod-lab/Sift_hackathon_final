@@ -1,0 +1,63 @@
+{
+  "case_id": "VIGIA-REAL-006",
+  "target": "Unknown",
+  "intent_verdict": "Suspicious",
+  "summary": "Analysis of telemetry indicates potential reconnaissance activity (deleted network tools) and presence of legacy communication software (AIM6). Presence of 'm57biz.xls' and external email headers suggests potential data staging or exfiltration. Coverage: Filesystem=YES; Registry=NO; EventLogs=NO;",
+  "artifacts": [
+    {
+      "name": "Email Headers",
+      "type": "email_header",
+      "value": "simsong@xy.dreamhostps.com / tuckergorge@gmail.com",
+      "description": "External email communication artifacts identified.",
+      "confidence": "high",
+      "recommended_validation": "Pivot to browser history or mail client artifacts to determine if these were used for exfiltration.",
+      "risk_score": 50,
+      "priority": "Medium",
+      "review_status": "pending"
+    },
+    {
+      "name": "m57biz.xls",
+      "type": "file_metadata",
+      "value": "C:/Documents and Settings/Jean/Desktop/m57biz.xls",
+      "description": "Business document located on user desktop.",
+      "confidence": "high",
+      "recommended_validation": "Verify file contents and access logs.",
+      "risk_score": 40,
+      "priority": "Medium",
+      "review_status": "pending"
+    },
+    {
+      "name": "Network Tools (ipconfig.exe/net.exe)",
+      "type": "process_list",
+      "value": "deleted",
+      "description": "Network reconnaissance tools deleted from system.",
+      "confidence": "medium",
+      "recommended_validation": "Check MFT/UsnJrnl for deletion timestamps and Prefetch/Shimcache for execution history.",
+      "risk_score": 60,
+      "priority": "High",
+      "review_status": "pending"
+    },
+    {
+      "name": "AIM6",
+      "type": "software_installation",
+      "value": "installed with suspicious toolbar bundles",
+      "description": "Legacy IM software installed with potentially unwanted toolbars.",
+      "confidence": "medium",
+      "recommended_validation": "Audit communication logs and contact lists.",
+      "risk_score": 40,
+      "priority": "Medium",
+      "review_status": "pending"
+    },
+    {
+      "name": "Cached HTML Files",
+      "type": "cached_file",
+      "value": "rcstatus.htm / InstallStatus[1].htm",
+      "description": "Cached browser/installation status files.",
+      "confidence": "medium",
+      "recommended_validation": "None",
+      "risk_score": 5,
+      "priority": "Low",
+      "review_status": "pending"
+    }
+  ]
+}
