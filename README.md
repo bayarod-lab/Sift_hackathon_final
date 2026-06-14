@@ -17,7 +17,7 @@ Markdown
 
 ## 🏗️ Architecture Diagram
 
-![Architecture Diagram](docs/architecture.png)[cite: 18]
+![Architecture Diagram](docs/Diagram.png)[cite: 18]
 
 **Classification Architecture Strategy:** 
 This orchestrator executes under an **Alternative Agentic IDE** pattern (utilizing Aider). A clear visual showing how components connect—the agent, SIFT tools, MCP servers, evidence sources, and output pipeline—is provided above. Evidence integrity is enforced via strict architectural isolation layers (OS-level decoupled extraction via `fls`/`ewfmount`/`7z`) rather than soft prompt controls. The Aider `--read` flag creates a hard boundary, ensuring original forensic data blocks remain completely read-only even if an intermediate model execution fails.
