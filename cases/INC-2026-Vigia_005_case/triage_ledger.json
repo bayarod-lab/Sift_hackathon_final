@@ -1,0 +1,55 @@
+{
+  "case_id": "Vigia_005_case",
+  "target": "Jane",
+  "intent_verdict": "SUSPICION",
+  "summary": "Analysis of the system reveals multiple layers of cryptographic concealment, including AES-encrypted files, a BitLocker-encrypted volume, and GPG/PGP-encrypted keys. These findings are consistent with data obfuscation consistent with encryption practices.",
+  "null_hypothesis": "The encryption methods observed are consistent with standard, authorized data protection practices and do not inherently indicate malicious intent.",
+  "case_confidence": 88,
+  "mitre_ttps": [
+    "T1027"
+  ],
+  "artifacts": [
+    {
+      "name": "AES-encrypted README",
+      "type": "file_metadata",
+      "value": "AES-encrypted README file in Documents",
+      "description": "AES encryption applied to a README file. Execution status unverified \u2014 Prefetch/Shimcache/Amcache/Event Logs not exam...",
+      "presence_confidence": "High",
+      "execution_confidence": "None",
+      "intent_confidence": "Medium",
+      "recommended_validation": "Examine file entropy and associated application logs.",
+      "risk_score": 60,
+      "priority": "Medium",
+      "review_status": "pending",
+      "iocs": []
+    },
+    {
+      "name": "BitLocker Volume R2D2",
+      "type": "file_metadata",
+      "value": "BitLocker volume named R2D2",
+      "description": "Use of BitLocker on a specific volume with a non-standard label. Execution status unverified \u2014 Prefetch/Shimcache/Amc...",
+      "presence_confidence": "High",
+      "execution_confidence": "None",
+      "intent_confidence": "Medium",
+      "recommended_validation": "Verify volume creation logs and access history.",
+      "risk_score": 70,
+      "priority": "Medium",
+      "review_status": "pending",
+      "iocs": []
+    },
+    {
+      "name": "GPG/PGP Encrypted Keys",
+      "type": "file_metadata",
+      "value": "Keys file in Downloads encrypted with GPG/PGP",
+      "description": "Asymmetric encryption used for secret communication. Execution status unverified \u2014 Prefetch/Shimcache/Amcache/Event L...",
+      "presence_confidence": "High",
+      "execution_confidence": "None",
+      "intent_confidence": "Medium",
+      "recommended_validation": "Check for GPG software installation and key management logs.",
+      "risk_score": 65,
+      "priority": "Medium",
+      "review_status": "pending",
+      "iocs": []
+    }
+  ]
+}

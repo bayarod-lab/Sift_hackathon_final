@@ -1,0 +1,128 @@
+{
+  "case_id": "tdungan-telemetry",
+  "target": "WKS-WINXP32BIT",
+  "intent_verdict": "MALICE",
+  "summary": "Evidence indicates a compromise involving C2 communication and staging of suspicious binaries. Masquerading of svchost.exe in a non-standard directory is observed, consistent with persistence mechanisms.",
+  "null_hypothesis": "The system is assumed benign. However, the presence of svchost.exe in c:\\windows\\system32\\dllhost\\ and connections to known malicious IPs (207.58.245.179) contradicts the null hypothesis.",
+  "case_confidence": 93,
+  "mitre_ttps": [
+    "T1036",
+    "T1071",
+    "T1105",
+    "T1074",
+    "T1021",
+    "T1189"
+  ],
+  "artifacts": [
+    {
+      "name": "Masquerading Binary",
+      "type": "Execution Path",
+      "value": "c:\\windows\\system32\\dllhost\\svchost.exe",
+      "description": "System binary found in non-standard directory, consistent with masquerading.",
+      "presence_confidence": "High",
+      "execution_confidence": "Medium",
+      "intent_confidence": "High",
+      "recommended_validation": "Check MFT, Prefetch, and Shimcache for execution evidence.",
+      "risk_score": 95,
+      "priority": "High",
+      "review_status": "pending",
+      "iocs": [
+        "c:\\windows\\system32\\dllhost\\svchost.exe"
+      ]
+    },
+    {
+      "name": "C2 Server",
+      "type": "IP Address",
+      "value": "207.58.245.179",
+      "description": "Remote server associated with malicious payload delivery and C2 communication.",
+      "presence_confidence": "High",
+      "execution_confidence": "High",
+      "intent_confidence": "High",
+      "recommended_validation": "Review firewall and proxy logs for connection duration and data volume.",
+      "risk_score": 90,
+      "priority": "High",
+      "review_status": "pending",
+      "iocs": [
+        "207.58.245.179"
+      ]
+    },
+    {
+      "name": "Staged Executable",
+      "type": "Execution Path",
+      "value": "C:\\Documents and Settings\\tdungan\\Local Settings\\Temp\\pkxezy1tji98.exe",
+      "description": "Executable found in user temp directory, consistent with staging.",
+      "presence_confidence": "High",
+      "execution_confidence": "Medium",
+      "intent_confidence": "High",
+      "recommended_validation": "Check Shimcache and Amcache for execution status.",
+      "risk_score": 85,
+      "priority": "High",
+      "review_status": "pending",
+      "iocs": []
+    },
+    {
+      "name": "Malicious Payload",
+      "type": "URL",
+      "value": "http://207.58.245.179/Signed_Update.jar",
+      "description": "URL associated with malicious payload delivery.",
+      "presence_confidence": "High",
+      "execution_confidence": "High",
+      "intent_confidence": "High",
+      "recommended_validation": "Execution status unverified \u2014 Prefetch/Shimcache/Amcache/Event Logs not examined for this artifact.",
+      "risk_score": 90,
+      "priority": "High",
+      "review_status": "pending",
+      "iocs": [
+        "http://207.58.245.179/Signed_Update.jar"
+      ]
+    },
+    {
+      "name": "Remote Access IP",
+      "type": "network_flow",
+      "value": "10.3.98.10",
+      "description": "Recovered network artifact.",
+      "presence_confidence": "High",
+      "execution_confidence": "Medium",
+      "intent_confidence": "None",
+      "recommended_validation": "Corroborate telemetry.",
+      "risk_score": 50,
+      "priority": "Medium",
+      "review_status": "pending",
+      "iocs": [
+        "10.3.98.10"
+      ]
+    },
+    {
+      "name": "Malicious Redirect URL",
+      "type": "URL",
+      "value": "http://bit.ly/GEUMQQ",
+      "description": "Redirect URL identified in logs.",
+      "presence_confidence": "High",
+      "execution_confidence": "None",
+      "intent_confidence": "Medium",
+      "recommended_validation": "Corroborate telemetry.",
+      "risk_score": 60,
+      "priority": "Medium",
+      "review_status": "pending",
+      "iocs": [
+        "http://bit.ly/GEUMQQ"
+      ]
+    },
+    {
+      "name": "Malicious Payload URL",
+      "type": "URL",
+      "value": "http://207.58.245.179:80/tY77np5Yyi",
+      "description": "Secondary payload URL identified in logs.",
+      "presence_confidence": "High",
+      "execution_confidence": "High",
+      "intent_confidence": "High",
+      "recommended_validation": "Corroborate telemetry.",
+      "risk_score": 90,
+      "priority": "High",
+      "review_status": "pending",
+      "iocs": [
+        "http://207.58.245.179:80/tY77np5Yyi"
+      ]
+    }
+  ]
+}

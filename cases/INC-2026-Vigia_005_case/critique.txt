@@ -1,0 +1,16 @@
+QA Audit: INC-2026-Vigia_005_case
+Auditor: Senior Forensic Analyst
+
+1. FACTUAL ACCURACY: The summary characterizes the encryption as "deliberate data obfuscation." While the evidence supports the presence of encryption, "deliberate" implies intent that has not yet been proven. Suggest using "consistent with" or "indicative of" to maintain neutrality until further investigation confirms the user's intent.
+
+2. ROLE ASSIGNMENT: Appropriate. The analyst correctly identified the user as the subject of the investigation without prematurely assigning an "Actor" role or misattributing activity to external infrastructure.
+
+3. MITRE VALIDATION: T1027 (Obfuscated Files or Information) is well-supported by the artifacts. However, T1070 (Indicator Removal on Host) is unsupported by the current evidence. Encryption is a protective measure, not an indicator removal technique. Unless there is evidence of log clearing, file wiping, or timestamp manipulation, remove T1070 from the mapping.
+
+4. SEMANTIC BIAS: None detected. The analyst avoided labeling this as "malware" or "C2," correctly identifying the activity as "encryption_concealment."
+
+5. NULL HYPOTHESIS: Excellent. The null hypothesis is clearly stated and provides a necessary counter-balance to the suspicious findings, acknowledging that encryption is a standard security practice.
+
+6. VERDICT CALIBRATION: "Suspicious" is the correct classification. The layering of multiple, distinct encryption methods (AES, BitLocker, GPG) on a single workstation is anomalous and warrants further investigation without assuming malice.
+
+7. IOC COMPLETENESS: The analyst correctly treated file paths and volume labels as artifacts rather than IOCs. No false IOCs were generated.

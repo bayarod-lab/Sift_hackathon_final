@@ -1,0 +1,38 @@
+[
+  {
+    "hunt_type": "STAGING",
+    "artifact_path": "Users/fredr/AppData/Local/Temp/Temp1_StarFury.zip",
+    "reason": "Archive found in user temp directory, potential staging area.",
+    "confidence": "Medium"
+  },
+  {
+    "hunt_type": "STAGING",
+    "artifact_path": "Users/fredr/AppData/Local/Temp/Temp2_StarFury.zip",
+    "reason": "Archive found in user temp directory, potential staging area.",
+    "confidence": "Medium"
+  },
+  {
+    "hunt_type": "STAGING",
+    "artifact_path": "Users/fredr/AppData/Local/Temp/Temp3_StarFury.zip",
+    "reason": "Archive found in user temp directory, potential staging area.",
+    "confidence": "Medium"
+  },
+  {
+    "hunt_type": "KNOWN BAD TOOL NAMES",
+    "artifact_path": "Users/srl-h/Downloads/sdelete64.exe",
+    "reason": "SDelete is a known tool often used for anti-forensics/wiping evidence.",
+    "confidence": "Medium"
+  },
+  {
+    "hunt_type": "SCRIPT IN UNEXPECTED PLACE",
+    "artifact_path": "Users/fredr/AppData/Local/Temp/f4136dbd-be88-4a99-8fb9-c70f12760e2b.bat",
+    "reason": "Batch script found in user temp directory.",
+    "confidence": "Medium"
+  },
+  {
+    "hunt_type": "DLL SIDELOADING",
+    "artifact_path": "Users/fredr/AppData/Local/Temp/_MEI118162/mfc90.dll",
+    "reason": "DLL found in PyInstaller temp directory, potential execution vector.",
+    "confidence": "Low"
+  }
+]

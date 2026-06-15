@@ -1,0 +1,70 @@
+{
+  "case_id": "rocba-cdrive",
+  "target": "Users/fredr",
+  "intent_verdict": "SUSPICION",
+  "summary": "Evidence indicates coordinated malicious activity by Actor fred.rocba@outlook.com targeting user accounts fredr and srl-h. The presence of SDelete (anti-forensic utility), multiple staging archives (StarFury.zip), and significant Recycle Bin activity (I/R files) indicates deliberate evidence wiping and data staging. Execution is supported by SDelete.lnk in the Recent folder and Recycle Bin metadata, contradicting the previous unverified status.",
+  "null_hypothesis": "The presence of SDelete and multiple staging archives in the Temp directory is inconsistent with standard software installation or cleanup, rendering the benign hypothesis unsupported by the evidence.",
+  "case_confidence": 85,
+  "mitre_ttps": [
+    "T1070",
+    "T1074"
+  ],
+  "artifacts": [
+    {
+      "name": "SDelete Tool (Actor: fred.rocba@outlook.com)",
+      "type": "Tool",
+      "value": "Users/fredr/Downloads/SDelete.zip",
+      "description": "SDelete utility found in user downloads folder; evidence of execution via SDelete.lnk.",
+      "presence_confidence": "High",
+      "execution_confidence": "High",
+      "intent_confidence": "High",
+      "recommended_validation": "Examine Prefetch and Shimcache for execution evidence.",
+      "risk_score": 80,
+      "priority": "High",
+      "review_status": "pending",
+      "iocs": []
+    },
+    {
+      "name": "Suspicious Executable (Actor: fred.rocba@outlook.com)",
+      "type": "Execution Path",
+      "value": "Users/fredr/AppData/Local/Temp/f4136dbd-be88-4a99-8fb9-c70f12760e2b.bat",
+      "description": "Batch script found in user temp directory.",
+      "presence_confidence": "High",
+      "execution_confidence": "Medium",
+      "intent_confidence": "Medium",
+      "recommended_validation": "Examine Event Logs for process execution.",
+      "risk_score": 60,
+      "priority": "Medium",
+      "review_status": "pending",
+      "iocs": []
+    },
+    {
+      "name": "Suspicious Executable (Actor: fred.rocba@outlook.com)",
+      "type": "Execution Path",
+      "value": "Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/I1LOQNR.exe",
+      "description": "Executable found in recycle bin; metadata indicates user interaction.",
+      "presence_confidence": "High",
+      "execution_confidence": "High",
+      "intent_confidence": "High",
+      "recommended_validation": "Examine file metadata for deletion time.",
+      "risk_score": 70,
+      "priority": "High",
+      "review_status": "pending",
+      "iocs": []
+    },
+    {
+      "name": "STAGING (Actor: fred.rocba@outlook.com)",
+      "type": "hunt_flag",
+      "value": "Users/fredr/AppData/Local/Temp/Temp1_StarFury.zip",
+      "description": "Archive found in user temp directory, potential staging area.",
+      "presence_confidence": "High",
+      "execution_confidence": "Medium",
+      "intent_confidence": "High",
+      "recommended_validation": "Review file contents for staging activity.",
+      "risk_score": 75,
+      "priority": "High",
+      "review_status": "pending",
+      "iocs": []
+    }
+  ]
+}

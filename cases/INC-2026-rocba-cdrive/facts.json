@@ -1,0 +1,228 @@
+[
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "Users/fredr/AppData/Local/Temp/f4136dbd-be88-4a99-8fb9-c70f12760e2b.bat",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "Users/fredr/AppData/Local/Temp/~nsu.tmp/Au_.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$I1LOQNR.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$I3B3R3X.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$I8WAYH0.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$I9531FE.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$IAK9LXE.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$IDTQK82.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$R1LOQNR.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$R3B3R3X.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$R8WAYH0.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$R9531FE.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$RAK9LXE.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "$Recycle.Bin/S-1-5-21-528816539-567677750-276746561-1002/$RDTQK82.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": true
+  },
+  {
+    "artifact_type": "Tool",
+    "artifact_name": "SDelete Tool",
+    "artifact_value": "Users/fredr/Downloads/SDelete.zip",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "Medium",
+    "iocs": false
+  },
+  {
+    "artifact_type": "Tool",
+    "artifact_name": "SDelete Tool",
+    "artifact_value": "Users/fredr/AppData/Roaming/Microsoft/Windows/Recent/SDelete.lnk",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "Medium",
+    "iocs": false
+  },
+  {
+    "artifact_type": "Email",
+    "artifact_name": "Actor Email",
+    "artifact_value": "fred.rocba@outlook.com",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "Medium",
+    "iocs": false
+  },
+  {
+    "artifact_type": "Account Name",
+    "artifact_name": "User Account",
+    "artifact_value": "fredr",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": false
+  },
+  {
+    "artifact_type": "Account Name",
+    "artifact_name": "User Account",
+    "artifact_value": "srl-h",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "High",
+    "iocs": false
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable",
+    "artifact_value": "Users/fredr/AppData/Local/Temp/_MEI118162/python27.dll",
+    "source_file": "cases/INC-2026-rocba-cdrive/extractions/filesystem_metadata.txt",
+    "confidence": "Medium",
+    "iocs": true
+  },
+  {
+    "artifact_type": "hunt_flag",
+    "artifact_name": "STAGING",
+    "artifact_value": "Users/fredr/AppData/Local/Temp/Temp1_StarFury.zip",
+    "source_file": "cases/INC-2026-rocba-cdrive/hunt_flags.json",
+    "confidence": "Medium",
+    "iocs": [
+      "Users/fredr/AppData/Local/Temp/Temp1_StarFury.zip"
+    ],
+    "hunt_reason": "Archive found in user temp directory, potential staging area."
+  },
+  {
+    "artifact_type": "hunt_flag",
+    "artifact_name": "STAGING",
+    "artifact_value": "Users/fredr/AppData/Local/Temp/Temp2_StarFury.zip",
+    "source_file": "cases/INC-2026-rocba-cdrive/hunt_flags.json",
+    "confidence": "Medium",
+    "iocs": [
+      "Users/fredr/AppData/Local/Temp/Temp2_StarFury.zip"
+    ],
+    "hunt_reason": "Archive found in user temp directory, potential staging area."
+  },
+  {
+    "artifact_type": "hunt_flag",
+    "artifact_name": "STAGING",
+    "artifact_value": "Users/fredr/AppData/Local/Temp/Temp3_StarFury.zip",
+    "source_file": "cases/INC-2026-rocba-cdrive/hunt_flags.json",
+    "confidence": "Medium",
+    "iocs": [
+      "Users/fredr/AppData/Local/Temp/Temp3_StarFury.zip"
+    ],
+    "hunt_reason": "Archive found in user temp directory, potential staging area."
+  },
+  {
+    "artifact_type": "hunt_flag",
+    "artifact_name": "KNOWN BAD TOOL NAMES",
+    "artifact_value": "Users/srl-h/Downloads/sdelete64.exe",
+    "source_file": "cases/INC-2026-rocba-cdrive/hunt_flags.json",
+    "confidence": "Medium",
+    "iocs": [
+      "Users/srl-h/Downloads/sdelete64.exe"
+    ],
+    "hunt_reason": "SDelete is a known tool often used for anti-forensics/wiping evidence."
+  },
+  {
+    "artifact_type": "hunt_flag",
+    "artifact_name": "SCRIPT IN UNEXPECTED PLACE",
+    "artifact_value": "Users/fredr/AppData/Local/Temp/f4136dbd-be88-4a99-8fb9-c70f12760e2b.bat",
+    "source_file": "cases/INC-2026-rocba-cdrive/hunt_flags.json",
+    "confidence": "Medium",
+    "iocs": [
+      "Users/fredr/AppData/Local/Temp/f4136dbd-be88-4a99-8fb9-c70f12760e2b.bat"
+    ],
+    "hunt_reason": "Batch script found in user temp directory."
+  },
+  {
+    "artifact_type": "hunt_flag",
+    "artifact_name": "DLL SIDELOADING",
+    "artifact_value": "Users/fredr/AppData/Local/Temp/_MEI118162/mfc90.dll",
+    "source_file": "cases/INC-2026-rocba-cdrive/hunt_flags.json",
+    "confidence": "Low",
+    "iocs": [
+      "Users/fredr/AppData/Local/Temp/_MEI118162/mfc90.dll"
+    ],
+    "hunt_reason": "DLL found in PyInstaller temp directory, potential execution vector."
+  }
+]

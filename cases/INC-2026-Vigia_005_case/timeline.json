@@ -1,0 +1,29 @@
+[
+  {
+    "sequence": 1,
+    "event_description": "Presence of AES-encrypted README file in Documents directory, indicating potential data obfuscation.",
+    "artifacts_involved": [
+      "AES-encrypted README"
+    ],
+    "mitre_ttp": "T1027",
+    "confidence": "Medium"
+  },
+  {
+    "sequence": 2,
+    "event_description": "Presence of BitLocker volume labeled 'R2D2', suggesting deliberate volume-level concealment.",
+    "artifacts_involved": [
+      "BitLocker Volume R2D2"
+    ],
+    "mitre_ttp": "T1027",
+    "confidence": "Medium"
+  },
+  {
+    "sequence": 3,
+    "event_description": "Presence of GPG/PGP encrypted keys file in Downloads, suggesting preparation for secure or covert communication.",
+    "artifacts_involved": [
+      "GPG/PGP Encrypted Keys"
+    ],
+    "mitre_ttp": "T1027",
+    "confidence": "Medium"
+  }
+]

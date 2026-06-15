@@ -1,0 +1,11 @@
+{"timestamp": "2026-06-15T17:40:38Z", "actor": "TOOL_EXEC", "action": "Executed: 7z x /home/sansforensics/Sift_hackathon/data/tdungan-telemetry.zip -ocases/INC-2026-tdungan-telemetry/extractions/raw_triage"}
+{"timestamp": "2026-06-15T17:40:38Z", "actor": "SYSTEM", "action": "Automated pipeline extracted /home/sansforensics/Sift_hackathon/data/tdungan-telemetry.zip to cases/INC-2026-tdungan-telemetry/extractions/summarized_evidence.txt"}
+{"timestamp": "2026-06-15T17:40:51Z", "action": "aider_pass_1_extraction", "estimated_input_tokens": 160163, "status": "completed"}
+{"timestamp": "2026-06-15T17:40:51Z", "actor": "AI_AGENT", "action": "Completed Pass 1: Fact & IOC Extraction."}
+{"timestamp": "2026-06-15T17:42:12Z", "action": "adversarial_hunt_pass", "status": "completed"}
+{"timestamp": "2026-06-15T17:42:58Z", "action": "aider_pass_2_correlation", "estimated_input_tokens": 1912, "status": "completed"}
+{"timestamp": "2026-06-15T17:43:05Z", "action": "aider_pass_3_peer_review_generation", "estimated_input_tokens": 2016, "status": "completed"}
+{"timestamp": "2026-06-15T17:43:14Z", "action": "aider_pass_4_peer_review_integration", "estimated_input_tokens": 583, "status": "completed"}
+{"timestamp": "2026-06-15T17:43:14Z", "actor": "AI_AGENT", "action": "Successfully integrated peer review feedback."}
+{"timestamp": "2026-06-15T17:43:20Z", "action": "aider_pass_5_timeline_reconstruction", "estimated_input_tokens": 1912, "status": "completed"}
+{"timestamp": "2026-06-15T17:43:20Z", "actor": "AI_AGENT", "action": "Completed Pass 1.C: Timeline Reconstruction."}

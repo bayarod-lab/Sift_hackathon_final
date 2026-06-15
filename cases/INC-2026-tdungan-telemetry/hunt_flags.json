@@ -1,0 +1,20 @@
+[
+  {
+    "hunt_type": "MASQUERADING",
+    "artifact_path": "c:\\windows\\system32\\dllhost\\svchost.exe",
+    "reason": "System binary 'svchost.exe' found in non-standard directory 'c:\\windows\\system32\\dllhost\\' and registered in Run key.",
+    "confidence": "High"
+  },
+  {
+    "hunt_type": "STAGING",
+    "artifact_path": "/Documents and Settings/tdungan/Local Settings/Temp/pkxezy1tji98.exe",
+    "reason": "Executable found in user temp directory.",
+    "confidence": "Medium"
+  },
+  {
+    "hunt_type": "STAGING",
+    "artifact_path": "2011-W2.zip",
+    "reason": "Archive found in log, potentially staging malicious content.",
+    "confidence": "Medium"
+  }
+]

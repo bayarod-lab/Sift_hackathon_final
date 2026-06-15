@@ -1,0 +1,5 @@
+Timestamp: Mon Jun 15 17:58:54 UTC 2026
+Source File: /home/sansforensics/Sift_hackathon/data/Vigia_005_case.json
+Hash Algorithm: SHA256
+Acquisition Hash: d6a98561b771ed1e2a6396c799a3ba7609b8bc1f94debe51859d3a7da2b3ee1f
+Hash Source: Cached hash from prior full calculation

@@ -1,0 +1,217 @@
+[
+  {
+    "artifact_type": "Account Name",
+    "artifact_name": "User Account",
+    "artifact_value": "tdungan",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": []
+  },
+  {
+    "artifact_type": "Host Name",
+    "artifact_name": "Victim Host",
+    "artifact_value": "WKS-WINXP32BIT",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": []
+  },
+  {
+    "artifact_type": "IP Address",
+    "artifact_name": "Remote Access IP",
+    "artifact_value": "10.3.98.10",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": [
+      "10.3.98.10"
+    ]
+  },
+  {
+    "artifact_type": "URL",
+    "artifact_name": "Malicious Redirect URL",
+    "artifact_value": "http://bit.ly/GEUMQQ",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": [
+      "http://bit.ly/GEUMQQ"
+    ]
+  },
+  {
+    "artifact_type": "IP Address",
+    "artifact_name": "C2/Malicious Server IP",
+    "artifact_value": "207.58.245.179",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": [
+      "207.58.245.179"
+    ]
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable in Temp",
+    "artifact_value": "C:\\Documents and Settings\\tdungan\\Local Settings\\Temp\\pkxezy1tji98.exe",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": [
+      "C:\\Documents and Settings\\tdungan\\Local Settings\\Temp\\pkxezy1tji98.exe"
+    ]
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable in System32",
+    "artifact_value": "c:\\windows\\system32\\dllhost\\svchost.exe",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": [
+      "c:\\windows\\system32\\dllhost\\svchost.exe"
+    ]
+  },
+  {
+    "artifact_type": "Email",
+    "artifact_name": "User Email",
+    "artifact_value": "dungantimothy@gmail.com",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": []
+  },
+  {
+    "artifact_type": "Domain",
+    "artifact_name": "Infrastructure Domain",
+    "artifact_value": "shieldbase.local",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": []
+  },
+  {
+    "artifact_type": "Cookie",
+    "artifact_name": "Session Identifier",
+    "artifact_value": "NSC_MC_WT_DTQ_IUUQ",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "Medium",
+    "iocs": []
+  },
+  {
+    "artifact_type": "Cookie",
+    "artifact_name": "Session Identifier",
+    "artifact_value": "NSC_MC_WT_MJUF_IUUQ",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "Medium",
+    "iocs": []
+  },
+  {
+    "artifact_type": "URL",
+    "artifact_name": "Malicious Payload URL",
+    "artifact_value": "http://207.58.245.179/Signed_Update.jar",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": [
+      "http://207.58.245.179/Signed_Update.jar"
+    ]
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable in Temp",
+    "artifact_value": "C:\\Documents and Settings\\tdungan\\Local Settings\\Temp\\hsperfdata_tdungan",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "Medium",
+    "iocs": [
+      "C:\\Documents and Settings\\tdungan\\Local Settings\\Temp\\hsperfdata_tdungan"
+    ]
+  },
+  {
+    "artifact_type": "URL",
+    "artifact_name": "Referrer URL",
+    "artifact_value": "http://mashable.com/2012/04/02/kinect-star-wars-dancing/",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "Medium",
+    "iocs": []
+  },
+  {
+    "artifact_type": "Cookie",
+    "artifact_name": "Session Identifier",
+    "artifact_value": "GAPS",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "Medium",
+    "iocs": []
+  },
+  {
+    "artifact_type": "Cookie",
+    "artifact_name": "Session Identifier",
+    "artifact_value": "LSID",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "Medium",
+    "iocs": []
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable in Temp",
+    "artifact_value": "C:\\Documents and Settings\\tdungan\\Local Settings\\Temp\\EScan",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "Medium",
+    "iocs": [
+      "C:\\Documents and Settings\\tdungan\\Local Settings\\Temp\\EScan"
+    ]
+  },
+  {
+    "artifact_type": "URL",
+    "artifact_name": "Malicious Payload URL",
+    "artifact_value": "http://207.58.245.179:80/tY77np5Yyi",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": [
+      "http://207.58.245.179:80/tY77np5Yyi"
+    ]
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable in Temp",
+    "artifact_value": "C:\\Documents and Settings\\tdungan\\Local Settings\\Temp\\mozilla-media-cache",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "Medium",
+    "iocs": [
+      "C:\\Documents and Settings\\tdungan\\Local Settings\\Temp\\mozilla-media-cache"
+    ]
+  },
+  {
+    "artifact_type": "Execution Path",
+    "artifact_name": "Suspicious Executable in System32",
+    "artifact_value": "C:\\WINDOWS\\system32\\dllhost\\winclient.reg",
+    "source_file": "cases/INC-2026-tdungan-telemetry/extractions/raw_triage/tdungan-incident.log",
+    "confidence": "High",
+    "iocs": [
+      "C:\\WINDOWS\\system32\\dllhost\\winclient.reg"
+    ]
+  },
+  {
+    "artifact_type": "hunt_flag",
+    "artifact_name": "MASQUERADING",
+    "artifact_value": "c:\\windows\\system32\\dllhost\\svchost.exe",
+    "source_file": "cases/INC-2026-tdungan-telemetry/hunt_flags.json",
+    "confidence": "High",
+    "iocs": [
+      "c:\\windows\\system32\\dllhost\\svchost.exe"
+    ],
+    "hunt_reason": "System binary 'svchost.exe' found in non-standard directory 'c:\\windows\\system32\\dllhost\\' and registered in Run key."
+  },
+  {
+    "artifact_type": "hunt_flag",
+    "artifact_name": "STAGING",
+    "artifact_value": "/Documents and Settings/tdungan/Local Settings/Temp/pkxezy1tji98.exe",
+    "source_file": "cases/INC-2026-tdungan-telemetry/hunt_flags.json",
+    "confidence": "Medium",
+    "iocs": [
+      "/Documents and Settings/tdungan/Local Settings/Temp/pkxezy1tji98.exe"
+    ],
+    "hunt_reason": "Executable found in user temp directory."
+  },
+  {
+    "artifact_type": "hunt_flag",
+    "artifact_name": "STAGING",
+    "artifact_value": "2011-W2.zip",
+    "source_file": "cases/INC-2026-tdungan-telemetry/hunt_flags.json",
+    "confidence": "Medium",
+    "iocs": [
+      "2011-W2.zip"
+    ],
+    "hunt_reason": "Archive found in log, potentially staging malicious content."
+  }
+]

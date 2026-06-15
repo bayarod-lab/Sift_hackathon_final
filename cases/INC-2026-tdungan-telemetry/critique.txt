@@ -1,0 +1,25 @@
+QA AUDIT: INC-2026-tdungan-telemetry
+
+1. FACTUAL ACCURACY:
+The ledger generally aligns with the facts. However, the junior analyst has incorrectly labeled several benign or administrative artifacts (e.g., 'hsperfdata_tdungan', 'EScan', 'mozilla-media-cache') as "Malicious Payload" or "Suspicious Executable". These are standard application artifacts, not malicious payloads. This overstatement undermines the credibility of the report.
+
+2. ROLE ASSIGNMENT:
+The identification of the Victim (WKS-WINXP32BIT) and User (tdungan) is accurate. The Infrastructure (207.58.245.179) is correctly identified as malicious. No Actor has been identified, which is appropriate given the current evidence.
+
+3. MITRE VALIDATION:
+The mapped TTPs (T1036 - Masquerading, T1071 - Application Layer Protocol, T1105 - Ingress Tool Transfer) are well-supported by the evidence of the masquerading svchost.exe and the download of the .jar file. These mappings are valid.
+
+4. SEMANTIC BIAS:
+There is a significant bias toward labeling all findings as "Malicious". The junior analyst failed to distinguish between actual malicious artifacts (the masquerading svchost.exe) and standard system/application artifacts (temp files, cache directories). This creates a "false positive" inflation in the risk assessment.
+
+5. NULL HYPOTHESIS:
+The null hypothesis is well-stated and directly addresses the evidence. It correctly identifies that the presence of the masquerading binary and C2 connections invalidates the benign assumption.
+
+6. VERDICT CALIBRATION:
+The "Malicious" verdict is supported by the high-confidence artifacts (masquerading binary + C2 IP). The verdict is appropriately calibrated.
+
+7. IOC COMPLETENESS:
+The junior analyst has incorrectly included local file paths (e.g., 'C:\Documents and Settings\tdungan\Local Settings\Temp\hsperfdata_tdungan') in the IOC list for several artifacts. Per policy, local file paths are artifacts, not IOCs. These should be removed from the IOC fields to prevent ingestion of non-actionable data into threat intelligence platforms.
+
+RECOMMENDATION:
+The junior analyst must revise the ledger to remove the "Malicious" label from standard application artifacts and strip local file paths from the IOC fields. The core findings regarding the masquerading binary and C2 communication remain high-priority and valid.

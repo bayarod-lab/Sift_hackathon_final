@@ -1,0 +1,33 @@
+[
+  {
+    "sequence": 1,
+    "event_description": "Actor downloaded SDelete utility and staged archives to user directories.",
+    "artifacts_involved": [
+      "SDelete Tool",
+      "KNOWN BAD TOOL NAMES",
+      "STAGING"
+    ],
+    "mitre_ttp": "T1074",
+    "confidence": "High"
+  },
+  {
+    "sequence": 2,
+    "event_description": "Evidence indicates execution of suspicious batch script and executables in user temp directory.",
+    "artifacts_involved": [
+      "Suspicious Executable",
+      "SCRIPT IN UNEXPECTED PLACE",
+      "DLL SIDELOADING"
+    ],
+    "mitre_ttp": "T1059",
+    "confidence": "Medium"
+  },
+  {
+    "sequence": 3,
+    "event_description": "Evidence indicates deletion of multiple executables, likely an attempt to remove forensic artifacts.",
+    "artifacts_involved": [
+      "Suspicious Executable"
+    ],
+    "mitre_ttp": "T1070",
+    "confidence": "High"
+  }
+]
