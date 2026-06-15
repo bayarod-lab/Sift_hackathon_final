@@ -54,6 +54,14 @@ body {
     line-height: 1.55;
 }
 
+/* ── ORPHAN & WIDOW CONTROLS (UNBREAKABLE FORMATTING) ── */
+table, tr, td, th, .artifact-card, .metric-row, .coverage-box, .exec-summary {
+    page-break-inside: avoid !important;
+}
+h1, h2, h3, .artifact-header {
+    page-break-after: avoid !important;
+}
+
 /* ── Cover / Header ── */
 .cover {
     background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #1d4ed8 100%);
@@ -257,7 +265,6 @@ thead th {
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
-tbody tr { page-break-inside: avoid !important; }
 tbody tr:nth-child(even) { background: #f8fafc; }
 tbody tr:nth-child(odd)  { background: #ffffff; }
 tbody td {
@@ -295,7 +302,6 @@ code {
     margin-bottom: 0.5cm;
     padding: 0.4cm;
     border-radius: 6px;
-    page-break-inside: avoid;
 }
 .artifact-header {
     font-size: 10pt;
@@ -435,18 +441,13 @@ def build_html(data: dict) -> str:
 </html>"""
 
 def extract_coverage(summary_text: str) -> tuple:
-    """Parses the 'Coverage: Filesystem: YES...' string out of the summary."""
     coverage_html = ""
-    # Search for both old (=) and new (:) schema formats to be safe
     match = re.search(r'(EVIDENCE COVERAGE MATRIX:.*)(?:$|\n)', summary_text)
     if match:
         cov_str = match.group(1)
         summary_text = summary_text.replace(cov_str, '').strip()
         
-        # Clean up the string to extract items
         clean_str = cov_str.replace("EVIDENCE COVERAGE MATRIX:", "").strip()
-        
-        # Support both [Filesystem: YES] and Filesystem=YES formats
         items = re.findall(r'\[?(Filesystem|Registry|EventLogs|NetworkLogs)[\:\=]\s*(YES|NO)\]?', clean_str)
         
         badges = ""
@@ -464,23 +465,19 @@ def build_dynamic_body(json_data: dict, real_target_path: str, case_dir: Path) -
     raw_summary = json_data.get("summary", "No summary provided by the agent.")
     artifacts = json_data.get("artifacts", [])
 
-    # Extract coverage matrix visually and escape the rest of the summary
     summary_safe, coverage_html = extract_coverage(raw_summary)
 
-    # --- Extract MITRE TTPs ---
     mitre_ttps = json_data.get("mitre_ttps", [])
     mitre_html = ""
     if mitre_ttps:
         safe_ttps = [html.escape(ttp) for ttp in mitre_ttps]
         mitre_html = f'<div style="margin-top: 10px; margin-bottom: 15px; font-size: 8.5pt; color: #334155;"><b>Candidate MITRE ATT&CK Techniques:</b> <code>{", ".join(safe_ttps)}</code></div>'
 
-    # --- Extract Null Hypothesis ---
     null_hypo = json_data.get("null_hypothesis", "")
     null_html = ""
     if null_hypo:
         null_html = f'<div style="background: #f1f5f9; border-left: 4px solid #64748b; padding: 10px; margin-top: 10px; margin-bottom: 15px; font-size: 8.5pt; border-radius: 0 4px 4px 0;"><b>Null Hypothesis Evaluation:</b> {html.escape(null_hypo)}</div>'
 
-    # --- Extract Timeline ---
     timeline_html = ""
     timeline_path = case_dir / "timeline.json"
     if timeline_path.exists():
@@ -489,9 +486,8 @@ def build_dynamic_body(json_data: dict, real_target_path: str, case_dir: Path) -
                 timeline_data = json.load(f)
             
             if timeline_data and isinstance(timeline_data, list):
-                # Check if it's our zero-evidence fallback
                 if len(timeline_data) == 1 and "failed" in timeline_data[0].get("event_description", "").lower():
-                    pass # Skip rendering the timeline section if it's empty/failed
+                    pass 
                 else:
                     events = ""
                     for event in timeline_data:
@@ -509,14 +505,12 @@ def build_dynamic_body(json_data: dict, real_target_path: str, case_dir: Path) -
         except Exception as e:
             print(f"[-] Warning: Failed to parse timeline.json for PDF rendering: {e}")
 
-    # Set styles based on AI verdict
     verdict_color_class = "green-top"
     if verdict in ["MALICIOUS", "CONFIRMED MALICIOUS"]:
         verdict_color_class = "red-top"
     elif verdict == "SUSPICIOUS":
         verdict_color_class = "orange-top"
 
-    # --- Build the Artifacts Cards dynamically ---
     artifacts_html = ""
     if len(artifacts) > 0:
         for art in artifacts:
@@ -525,7 +519,6 @@ def build_dynamic_body(json_data: dict, real_target_path: str, case_dir: Path) -
             safe_desc = html.escape(str(art.get("description", "No description provided.")).strip())
             safe_rec  = html.escape(str(art.get("recommended_validation", "Manual review required.")).strip())
 
-            # --- RENDER EXPLICIT IOC BLOCK ---
             iocs = art.get("iocs", [])
             if iocs and isinstance(iocs, list):
                 valid_iocs = [html.escape(i.strip()) for i in iocs if i.strip()]
@@ -533,7 +526,6 @@ def build_dynamic_body(json_data: dict, real_target_path: str, case_dir: Path) -
                     ioc_str = "<br>".join(valid_iocs)
                     safe_desc += f'<div style="margin-top: 8px; padding: 6px; background: #fee2e2; border-left: 3px solid #ef4444; border-radius: 3px; font-family: monospace; font-size: 7.5pt; word-wrap: break-word; color: #7f1d1d;"><b>INDICATORS OF COMPROMISE:</b><br>{ioc_str}</div>'
 
-            # --- Extract Risk Score safely ---
             risk_raw = str(art.get("risk_score", "0")).replace("$", "").split("/")[0]
             risk_clean = re.sub(r'[^0-9]', '', risk_raw)
             risk_val = int(risk_clean) if risk_clean else 0
@@ -552,7 +544,6 @@ def build_dynamic_body(json_data: dict, real_target_path: str, case_dir: Path) -
 
             header_right = f'<div style="display:flex; gap:5px;"><span class="risk-badge {risk_cls}">Risk: {safe_risk}/100</span><span class="pri-badge {pri_cls}">{safe_pri} Priority</span></div>'
 
-            # --- Map the Three-Tier Confidence Values ---
             def get_conf_cls(val):
                 v = val.upper()
                 if "HIGH" in v: return "high"
@@ -593,7 +584,6 @@ def build_dynamic_body(json_data: dict, real_target_path: str, case_dir: Path) -
     else:
         artifacts_html = "<p><em>No specific malicious or suspicious artifacts were extracted by the agent during this scan.</em></p>"
 
-    # Dynamic Section Numbering based on Timeline Presence
     sys_sec = "03" if timeline_html else "02"
     matrix_sec = "04" if timeline_html else "03"
 
@@ -629,6 +619,10 @@ def build_dynamic_body(json_data: dict, real_target_path: str, case_dir: Path) -
       </tbody>
     </table>
 
+    <div style="margin-top: 20px; margin-bottom: 15px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 8pt; color: #475569;">
+        <b>Risk Scoring Methodology:</b> Scores (0-100) are heuristically generated based on artifact type, presence of obfuscation, and intersection with known ATT&CK vectors. <i>0-20: Benign/Admin Baseline | 21-60: Suspicious/Dual-Use | 61-100: Actionable/Malicious.</i>
+    </div>
+
     <h2><span class="section-num">{matrix_sec}</span> Extracted Findings Matrix</h2>
     {artifacts_html}
     """
@@ -661,7 +655,6 @@ if __name__ == "__main__":
         print(f"Error reading JSON file {json_filepath}: {e}")
         sys.exit(1)
 
-    # Pull the real target path from the chain_of_custody log to fix "Target: Unknown"
     case_dir = Path(json_filepath).parent
     coc_path = case_dir / "chain_of_custody.txt"
     real_target = triage_data.get("target", "Unknown")
@@ -683,7 +676,6 @@ if __name__ == "__main__":
         "date": current_date,
         "title": "Dynamic Triage Assessment",
         "subtitle": "Autonomous Forensic Report",
-        # FIX: Added the case_dir parameter here
         "body_html": build_dynamic_body(triage_data, real_target, case_dir),
     }
 

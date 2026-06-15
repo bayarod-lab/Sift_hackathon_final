@@ -1,5 +1,0 @@
-{"timestamp": "2026-06-14T13:03:40Z", "actor": "TOOL_EXEC", "action": "Executed: 7z x /mnt/hgfs/Vm shared folder/VANKO/vanko-c-drive.CYLR.7z -ocases/INC-2026-vanko-c-drive_CYLR/extractions/raw_triage"}
-{"timestamp": "2026-06-14T13:03:48Z", "actor": "SYSTEM", "action": "Automated pipeline extracted /mnt/hgfs/Vm shared folder/VANKO/vanko-c-drive.CYLR.7z to cases/INC-2026-vanko-c-drive_CYLR/extractions/summarized_evidence.txt"}
-{"timestamp": "2026-06-14T13:04:11Z", "actor": "AI_AGENT", "action": "Completed Pass 1: Fact & IOC Extraction."}
-{"timestamp": "2026-06-14T13:04:54Z", "actor": "AI_AGENT", "action": "Successfully integrated peer review feedback."}
-{"timestamp": "2026-06-14T13:05:02Z", "actor": "AI_AGENT", "action": "Completed Pass 1.C: Timeline Reconstruction."}

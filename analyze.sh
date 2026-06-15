@@ -1,8 +1,16 @@
 #!/bin/bash
 set -e # Abort immediately if any command fails
 
+# ANSI Color Codes for Enterprise Terminal UI
+CYAN='\033[0;36m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+RED='\033[1;31m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
 if [ -z "$1" ]; then
-    echo "Usage: ./analyze.sh <path_to_evidence> [path_to_scenario_txt]"
+    echo -e "${YELLOW}Usage: ./analyze.sh <path_to_evidence> [path_to_scenario_txt]${NC}"
     exit 1
 fi
 
@@ -11,7 +19,7 @@ SCENARIO_FILE=$2
 
 # Verify file exists and resolve absolute path to prevent traversal attacks
 if [ ! -f "$TARGET" ]; then
-    echo "[-] 🚨 FATAL: Target file '$TARGET' does not exist."
+    echo -e "${RED}[-] 🚨 FATAL: Target file '$TARGET' does not exist.${NC}"
     exit 1
 fi
 TARGET=$(readlink -f "$TARGET")
@@ -32,10 +40,10 @@ CASE_DIR="cases/INC-2026-$CASE_NAME"
 # Force a clean slate to prevent the AI from hallucinating over ghost data
 if [ -d "$CASE_DIR" ]; then
     if [[ "$CASE_DIR" =~ ^cases/INC-2026- ]]; then
-        echo "[!] Existing case directory detected. Purging old artifacts to ensure forensic isolation..."
+        echo -e "${YELLOW}[!] Existing case directory detected. Purging old artifacts to ensure forensic isolation...${NC}"
         rm -rf "$CASE_DIR"
     else
-        echo "[-] 🚨 FATAL: Directory safety check failed. Aborting deletion."
+        echo -e "${RED}[-] 🚨 FATAL: Directory safety check failed. Aborting deletion.${NC}"
         exit 1
     fi
 fi
@@ -46,7 +54,7 @@ trap 'rm -f "/tmp/raw_mft_dump_${CASE_NAME}.txt"; sudo rmdir "/tmp/ewf_${CASE_NA
 # Handle Scenario Document ingestion if present
 SCENARIO_CONTEXT="No background scenario document provided for this case. Perform standard baseline triage."
 if [ -n "$SCENARIO_FILE" ] && [ -f "$SCENARIO_FILE" ]; then
-    echo "[+] Scenario document detected. Ingesting background investigation context..."
+    echo -e "${GREEN}[+] Scenario document detected. Ingesting background investigation context...${NC}"
     cp "$SCENARIO_FILE" "$CASE_DIR/investigation_scenario.txt"
     SCENARIO_CONTEXT=$(cat "$CASE_DIR/investigation_scenario.txt")
 fi
@@ -54,19 +62,19 @@ fi
 # ==============================================================================
 # PRE-FLIGHT DEPENDENCY CHECK
 # ==============================================================================
-echo "[*] Running pre-flight checks..."
-if [ ! -f "verify_schema.py" ]; then echo "[-] 🚨 FATAL: verify_schema.py is missing."; exit 1; fi
+echo -e "${CYAN}[*] Running pre-flight checks...${NC}"
+if [ ! -f "verify_schema.py" ]; then echo -e "${RED}[-] 🚨 FATAL: verify_schema.py is missing.${NC}"; exit 1; fi
 
 # ==============================================================================
 # FORENSIC CRYPTOGRAPHIC INTAKE (Pro-Grade Chain of Custody)
 # ==============================================================================
-echo "[*] Resolving cryptographic hash of original evidence..."
+echo -e "${CYAN}[*] Resolving cryptographic hash of original evidence...${NC}"
 EVIDENCE_HASH=""
 HASH_ALGO="SHA256"
 HASH_SOURCE="Independently calculated via native sha256sum"
 
 if { [[ "$TARGET" == *.e01 ]] || [[ "$TARGET" == *.E01 ]]; } && command -v ewfinfo >/dev/null 2>&1; then
-    echo "[+] Detected E01 format. Instantly extracting embedded acquisition hash..."
+    echo -e "${GREEN}[+] Detected E01 format. Instantly extracting embedded acquisition hash...${NC}"
     HASH_LINE=$(ewfinfo "$TARGET" | grep -iE "hash stored in file|SHA256 hash|MD5 hash" | head -n 1)
     EVIDENCE_HASH=$(echo "$HASH_LINE" | awk -F': ' '{print $2}' | tr -d ' ')
     if [ ${#EVIDENCE_HASH} -eq 64 ]; then
@@ -81,15 +89,15 @@ fi
 
 if [ -z "$EVIDENCE_HASH" ]; then
     if [[ "$TARGET" =~ ^/mnt/hgfs/ ]]; then
-        echo "[-] ⚠️ PERFORMANCE WARNING: Evidence is located in a VMware Shared Folder (/mnt/hgfs/)."
-        echo "[-] Hashing will be significantly delayed by hypervisor disk I/O serialization."
+        echo -e "${YELLOW}[-] ⚠️ PERFORMANCE WARNING: Evidence is located in a VMware Shared Folder (/mnt/hgfs/).${NC}"
+        echo -e "${YELLOW}[-] Hashing will be significantly delayed by hypervisor disk I/O serialization.${NC}"
     fi
-    echo "[*] Calculating hash via accelerated native utility..."
+    echo -e "${CYAN}[*] Calculating hash via accelerated native utility...${NC}"
     EVIDENCE_HASH=$(sha256sum "$TARGET" | awk '{print $1}')
     HASH_ALGO="SHA256"
 fi
 
-echo "[+] Intake Hash ($HASH_ALGO): $EVIDENCE_HASH"
+echo -e "${GREEN}[+] Intake Hash ($HASH_ALGO): $EVIDENCE_HASH${NC}"
 
 echo "Timestamp: $(date -u)"                   > "$CASE_DIR/chain_of_custody.txt"
 echo "Source File: $TARGET"                    >> "$CASE_DIR/chain_of_custody.txt"
@@ -106,7 +114,7 @@ fi
 AI_MODEL="${AI_MODEL:-gemini/gemini-3.1-flash-lite}"
 API_TIER="${API_TIER:-FREE}"
 
-echo "[*] Querying market capabilities for model: $AI_MODEL..."
+echo -e "${CYAN}[*] Querying market capabilities for model: $AI_MODEL...${NC}"
 MODEL_TIER=$(python3 -c "
 import sys
 try:
@@ -120,17 +128,17 @@ except Exception: print('LIGHT')
 " "$AI_MODEL")
 
 case "$MODEL_TIER" in
-  POWERFUL) TRUNCATE_LINES=2000; MAX_EVIDENCE_LINES=5000; echo "====================== PROFILE: POWERFUL ======================";;
-  MEDIUM)   TRUNCATE_LINES=1000;  MAX_EVIDENCE_LINES=3000; echo "====================== PROFILE: MEDIUM ======================";;
-  LIGHT|*)  TRUNCATE_LINES=500;  MAX_EVIDENCE_LINES=1500;  echo "====================== PROFILE: STANDARD ======================";;
+  POWERFUL) TRUNCATE_LINES=2000; MAX_EVIDENCE_LINES=5000; echo -e "${BOLD}====================== PROFILE: POWERFUL ======================${NC}";;
+  MEDIUM)   TRUNCATE_LINES=1000;  MAX_EVIDENCE_LINES=3000; echo -e "${BOLD}====================== PROFILE: MEDIUM ======================${NC}";;
+  LIGHT|*)  TRUNCATE_LINES=500;  MAX_EVIDENCE_LINES=1500;  echo -e "${BOLD}====================== PROFILE: STANDARD ======================${NC}";;
 esac
 
 if [ "$API_TIER" = "PAID" ]; then
     PHASE_1_COOLDOWN=1; PHASE_2_COOLDOWN=0; RETRY_COOLDOWN=5
-    echo "[+] Speed Profile: PAID TIER (delays disabled)"
+    echo -e "${GREEN}[+] Speed Profile: PAID TIER (delays disabled)${NC}"
 else
     PHASE_1_COOLDOWN=20; PHASE_2_COOLDOWN=10; RETRY_COOLDOWN=45
-    echo "[!] Speed Profile: FREE TIER (enforcing rate-limit delays)"
+    echo -e "${YELLOW}[!] Speed Profile: FREE TIER (enforcing rate-limit delays)${NC}"
 fi
 echo "--------------------------------------------------------"
 
@@ -140,41 +148,40 @@ echo "--------------------------------------------------------"
 IS_JSON_TELEMETRY=false
 
 if [[ "$TARGET" == *.json ]]; then
-    echo "[+] Ingesting JSON telemetry profile."
+    echo -e "${GREEN}[+] Ingesting JSON telemetry profile.${NC}"
     mkdir -p "$CASE_DIR/extractions"
     cp "$TARGET" "$CASE_DIR/extractions/telemetry_source.json"
     EVIDENCE_FILE="$CASE_DIR/extractions/telemetry_source.json"
     IS_JSON_TELEMETRY=true
 
 elif [[ "$TARGET" == *.e01 ]] || [[ "$TARGET" == *.E01 ]]; then
-    echo "[*] Detected EWF/EnCase forensic image format..."
+    echo -e "${CYAN}[*] Detected EWF/EnCase forensic image format...${NC}"
     mkdir -p "/tmp/ewf_$CASE_NAME"
     if ! sudo ewfmount "$TARGET" "/tmp/ewf_$CASE_NAME" 2>/dev/null; then
-        echo "[-] 🚨 FATAL: ewfmount failed."; exit 1
+        echo -e "${RED}[-] 🚨 FATAL: ewfmount failed.${NC}"; exit 1
     fi
     EVIDENCE_FILE="$CASE_DIR/extractions/filesystem_metadata.txt"
     mkdir -p "$CASE_DIR/extractions"
     touch "$EVIDENCE_FILE"
     
-    echo "[*] Discovering partition offsets via mmls..."
-    # Dynamically extract starting sectors for supported file systems
+    echo -e "${CYAN}[*] Discovering partition offsets via mmls...${NC}"
     OFFSETS=$(sudo mmls "/tmp/ewf_$CASE_NAME/ewf1" 2>/dev/null | grep -iE "NTFS|FAT|exFAT|Basic data|Linux|Mac" | awk '{print $3}' | grep -E '^[0-9]+$' || true)
     
     if [ -z "$OFFSETS" ]; then
-        echo "[!] No partition table found. Assuming logical image (Offset 0)..."
+        echo -e "${YELLOW}[!] No partition table found. Assuming logical image (Offset 0)...${NC}"
         OFFSETS="0"
     fi
     
     for OFFSET in $OFFSETS; do
-        echo "[*] Stream-Extracting MFT metadata at sector offset $OFFSET..."
-        sudo fls -o "$OFFSET" -r -p "/tmp/ewf_$CASE_NAME/ewf1" 2>/dev/null | \
-            grep -iE "NTUSER.DAT|SAM|SYSTEM|SOFTWARE|Prefetch|Recent|Recycle.Bin|AppData|Local\\\\Temp|mIRC|interception|Skype|WhatsApp|Classified" \
-            >> "$EVIDENCE_FILE" || true
-    done
+    echo -e "${CYAN}[*] Stream-Extracting MFT metadata at sector offset $OFFSET...${NC}"
+    # Stream the full directory structure, but discard massive known-benign noise directories
+    sudo fls -o "$OFFSET" -r -p "/tmp/ewf_$CASE_NAME/ewf1" 2>/dev/null | \
+        grep -vE "Microsoft\\\\Windows\\\\WinSxS|Google\\\\Chrome\\\\User Data\\\\Default\\\\Cache|AppData\\\\Local\\\\Microsoft\\\\Windows\\\\History" \
+        >> "$EVIDENCE_FILE" || true
+done
 
-    # Fallback in case of Full Disk Encryption (e.g., BitLocker)
     if [ ! -s "$EVIDENCE_FILE" ]; then
-        echo "[-] WARNING: File system extraction yielded no data (possible BitLocker/FDE). Falling back to string extraction..."
+        echo -e "${YELLOW}[-] WARNING: File system extraction yielded no data (possible BitLocker/FDE). Falling back to string extraction...${NC}"
         sudo strings -a "/tmp/ewf_$CASE_NAME/ewf1" | grep -iE "http://|https://|@[a-zA-Z0-9.-]+" | head -n 3000 > "$EVIDENCE_FILE" || true
     fi
 
@@ -183,14 +190,14 @@ elif [[ "$TARGET" == *.e01 ]] || [[ "$TARGET" == *.E01 ]]; then
     sudo rmdir "/tmp/ewf_$CASE_NAME" 2>/dev/null || true
 
 elif [[ "$TARGET" == *.7z ]] || [[ "$TARGET" == *.zip ]]; then
-    echo "[*] Detected compressed archive format..."
+    echo -e "${CYAN}[*] Detected compressed archive format...${NC}"
     TMP_EXTRACT="$CASE_DIR/extractions/raw_triage"
     mkdir -p "$TMP_EXTRACT"
     7z x "$TARGET" -o"$TMP_EXTRACT" -y > /dev/null
     echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"actor\": \"TOOL_EXEC\", \"action\": \"Executed: 7z x $TARGET -o$TMP_EXTRACT\"}" >> "$CASE_DIR/actions.jsonl"
 
     EVIDENCE_FILE="$CASE_DIR/extractions/summarized_evidence.txt"
-    echo "[*] Generating Forensic Summaries from Extracted Evidence..."
+    echo -e "${CYAN}[*] Generating Forensic Summaries from Extracted Evidence...${NC}"
 
     GREP_KEYWORDS="docx|xlsx|pdf|lnk|pf|bat|ps1|exe|log|\.db$|\.sqlite$|Login\.Data"
     ANTI_CONTAMINATION="FOR500|FOR508|SANS\.Handout|Master\.Scenario\.Solution|Grading\.Rubric"
@@ -199,9 +206,9 @@ elif [[ "$TARGET" == *.7z ]] || [[ "$TARGET" == *.zip ]]; then
     
     find "$TMP_EXTRACT" -type f | grep -iE "$GREP_KEYWORDS" | grep -viE "$ANTI_CONTAMINATION" | while read -r file; do
         echo "TARGET ARTIFACT: $(basename "$file")" >> "$EVIDENCE_FILE"
-        echo "PATH: $file"                          >> "$EVIDENCE_FILE"
+        echo "PATH: $file"                                          >> "$EVIDENCE_FILE"
         echo "SIZE: $(stat -c%s "$file" 2>/dev/null || echo "Unknown") bytes" >> "$EVIDENCE_FILE"
-        echo "---"                                  >> "$EVIDENCE_FILE"
+        echo "---"                                                  >> "$EVIDENCE_FILE"
     done
 
     echo -e "\n=== KEY SYSTEM LOGS & CONFIGURATION PREVIEWS ===" >> "$EVIDENCE_FILE"
@@ -211,11 +218,11 @@ elif [[ "$TARGET" == *.7z ]] || [[ "$TARGET" == *.zip ]]; then
     done
 
 elif [[ "$TARGET" == *.pcap ]] || [[ "$TARGET" == *.pcapng ]]; then
-    echo "[*] Detected Network Capture format..."
+    echo -e "${CYAN}[*] Detected Network Capture format...${NC}"
     EVIDENCE_FILE="$CASE_DIR/extractions/network_summary.txt"
     mkdir -p "$CASE_DIR/extractions"
     if command -v tshark >/dev/null 2>&1; then
-        echo "[*] Extracting network telemetry via tshark (Best-Effort)..."
+        echo -e "${CYAN}[*] Extracting network telemetry via tshark (Best-Effort)...${NC}"
         
         echo -e "\n=== ENDPOINTS & PROTOCOLS ===" > "$EVIDENCE_FILE"
         tshark -r "$TARGET" -q -z endpoints,ip >> "$EVIDENCE_FILE" || true
@@ -235,7 +242,7 @@ elif [[ "$TARGET" == *.pcap ]] || [[ "$TARGET" == *.pcapng ]]; then
         tshark -r "$TARGET" -Y "tls.handshake.type == 1" -T fields \
             -e ip.src -e ip.dst -e tls.handshake.extensions_server_name | sort | uniq -c | sort -nr | head -n 100 >> "$EVIDENCE_FILE" || true
     else
-        echo "[!] tshark not found. Falling back to deep string extraction..."
+        echo -e "${YELLOW}[!] tshark not found. Falling back to deep string extraction...${NC}"
         strings "$TARGET" | grep -iE "http://|https://|@[a-zA-Z0-9.-]+|user-agent:|cookie:|host:" | sort | uniq -c | sort -nr | head -n 300 > "$EVIDENCE_FILE" || true
     fi
     echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"actor\": \"TOOL_EXEC\", \"action\": \"Parsed structured PCAP telemetry.\"}" >> "$CASE_DIR/actions.jsonl"
@@ -247,12 +254,12 @@ else
 fi
 
 if [ ! -f "$EVIDENCE_FILE" ] || [ ! -s "$EVIDENCE_FILE" ]; then
-    echo "[-] 🚨 FATAL FORENSIC EXCEPTION 🚨"
-    echo "[-] Extraction yielded an empty file or missing data target."
+    echo -e "${RED}[-] 🚨 FATAL FORENSIC EXCEPTION 🚨${NC}"
+    echo -e "${RED}[-] Extraction yielded an empty file or missing data target.${NC}"
     exit 1
 fi
 
-echo "[*] Enforcing token-limit ceiling on raw evidence file..."
+echo -e "${CYAN}[*] Enforcing token-limit ceiling on raw evidence file...${NC}"
 head -n "$MAX_EVIDENCE_LINES" "$EVIDENCE_FILE" > "/tmp/capped_evidence_${CASE_NAME}.txt"
 mv "/tmp/capped_evidence_${CASE_NAME}.txt" "$EVIDENCE_FILE"
 echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"actor\": \"SYSTEM\", \"action\": \"Automated pipeline extracted $TARGET to $EVIDENCE_FILE\"}" >> "$CASE_DIR/actions.jsonl"
@@ -260,11 +267,11 @@ echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"actor\": \"SYSTEM\
 # ==============================================================================
 # --- PHASE 1.A: FACT & IOC EXTRACTION ENGINE ---
 # ==============================================================================
-echo "[*] PASS 1: Fact & IOC Extraction Engine Running..."
+echo -e "${CYAN}[*] PASS 1: Fact & IOC Extraction Engine Running...${NC}"
 echo "[]" > "$CASE_DIR/facts.json"
 
 if [ "$IS_JSON_TELEMETRY" = true ]; then
-    echo "[*] Structured JSON input detected. Building deterministic fact graph..."
+    echo -e "${CYAN}[*] Structured JSON input detected. Building deterministic fact graph...${NC}"
     python3 - "$EVIDENCE_FILE" "$CASE_DIR/facts.json" <<'PY'
 import json
 import ipaddress
@@ -275,7 +282,7 @@ BENIGN_DOMAINS = {"gmail.com", "hotmail.com", "yahoo.com", "sbcglobal.net",
                   "nist.gov", "outlook.com", "protonmail.com", "proton.me",
                   "google.com", "microsoft.com", "windows.com", "sourceforge.net",
                   "bing.com", "live.com", "office.com", "apple.com", "mozilla.org"}
-FAKE_TLDS = {"exe", "dll", "zip", "ini", "bat", "ps1", "log", "txt", "pdf", "doc", "xls", "xlsx", "docx"}
+FAKE_TLDS = {"exe", "dll", "zip", "ini", "bat", "ps1", "log", "txt", "pdf", "doc", "xls", "xlsx", "docx", "php", "jsp", "asp", "aspx", "sh", "py"}
 
 src, dst = sys.argv[1], sys.argv[2]
 
@@ -362,8 +369,6 @@ for art in artifacts:
         tld = dom.rsplit(".", 1)[-1]
         if tld in FAKE_TLDS or dom in email_domains: continue
         
-        # THE FIX: Skip if this domain match is just a piece of an extracted email
-        # (e.g., prevents 'spy.conspirator' from being extracted from 'spy.conspirator@nist.gov')
         is_in_email = any(dom in e for e in emails)
         if is_in_email: continue
         
@@ -382,21 +387,38 @@ for art in artifacts:
         actor_name = re.sub(r"\s*\(.*?\)\s*$", "", actor_name_match.group(1).strip())
         add_fact("identity_attribution", "Attributed Human Actor", actor_name, confidence="high", iocs=[])
 
-if not facts: add_fact("case_context", "Extraction Status", "No deterministic facts parsed from JSON telemetry", confidence="low", iocs=[])
+    # Extract Potential Bitcoin Wallets
+    btc_wallets = find_all(r"\b(?:bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}\b", blob)
+    for btc in btc_wallets:
+        add_fact("financial_indicator", "Bitcoin Wallet", btc, confidence="high", iocs=[btc])
 
-facts = facts[:25]
-with open(dst, "w", encoding="utf-8") as f: json.dump(facts, f, indent=2)
+    # Extract long, potentially malicious Base64 payloads (40+ characters)
+    b64_strings = find_all(r"(?:[A-Za-z0-9+/]{4}){10,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?", blob)
+    for b64:
+        if len(b64) > 50 and "==" in b64:
+            add_fact("obfuscation", "Suspicious Base64 Payload", b64, confidence="medium", iocs=[])
+
+    if not facts: add_fact("case_context", "Extraction Status", "No deterministic facts parsed from JSON telemetry", confidence="low", iocs=[])
+
+    facts = facts[:100]
+    with open(dst, "w", encoding="utf-8") as f: json.dump(facts, f, indent=2)
 PY
 else
     # AI Fallback Extractor
     cat .aider.chat.history.md >> "$CASE_DIR/agent_transcript.md" 2>/dev/null || true
     rm -f .aider.chat.history.md
 
+    # Estimate token usage based on input file sizes
+    INPUT_BYTES=$(wc -c < "$EVIDENCE_FILE" 2>/dev/null || echo 0)
+    ESTIMATED_TOKENS=$((INPUT_BYTES / 4))
+
     set +e
     aider --model "$AI_MODEL" --map-tokens 0 \
       --message "Read '$EVIDENCE_FILE'. Extract raw forensic facts. Create '$CASE_DIR/facts.json' as a JSON array of objects with keys: 'artifact_type', 'artifact_name', 'artifact_value', 'source_file', 'confidence', 'iocs'. Extract all IPs, MACs, emails, domains, hashes, URLs, user agents, cookies/session identifiers, account names, and execution paths. When an entity role is inferable, encode it in 'artifact_name', e.g., 'Actor Email', 'Victim IP', 'Associated Internal IP', 'Infrastructure Domain', or 'Unknown Email'. Limit to 20 highly actionable observations." \
       --yes-always --no-auto-commit --read "$EVIDENCE_FILE" --file "$CASE_DIR/facts.json"
     set -e
+
+    echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"action\": \"aider_pass_1_extraction\", \"estimated_input_tokens\": $ESTIMATED_TOKENS, \"status\": \"completed\"}" >> "$CASE_DIR/actions.jsonl"
 fi
 
 echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"actor\": \"AI_AGENT\", \"action\": \"Completed Pass 1: Fact & IOC Extraction.\"}" >> "$CASE_DIR/actions.jsonl"
@@ -404,7 +426,7 @@ echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"actor\": \"AI_AGEN
 # ==============================================================================
 # --- PHASE 1.B: CORRELATION & TRIAGE STAGING ---
 # ==============================================================================
-echo "[*] Handing facts off to AI Agent for Correlation & Triage Staging..."
+echo -e "${CYAN}[*] Handing facts off to AI Agent for Correlation & Triage Staging...${NC}"
 
 # 🛡️ DETERMINISTIC ZERO-EVIDENCE PROTOCOL
 ZERO_EVIDENCE=false
@@ -416,8 +438,8 @@ else
 fi
 
 if [ "$HAS_FACTS" == "no" ]; then
-    echo "[-] 🚨 ZERO-EVIDENCE PROTOCOL TRIGGERED: No actionable facts extracted."
-    echo "[-] Generating deterministic Inconclusive ledger and bypassing AI analysis to prevent hallucinations..."
+    echo -e "${RED}[-] 🚨 ZERO-EVIDENCE PROTOCOL TRIGGERED: No actionable facts extracted.${NC}"
+    echo -e "${RED}[-] Generating deterministic Inconclusive ledger and bypassing AI analysis to prevent hallucinations...${NC}"
     
     ZERO_EVIDENCE=true
     
@@ -459,7 +481,10 @@ cat .aider.chat.history.md >> "$CASE_DIR/agent_transcript.md" 2>/dev/null || tru
 rm -f .aider.chat.history.md
 
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-    echo "[*] Executing Pass 2: Agentic Correlation (Attempt $((RETRY_COUNT+1)) of $MAX_RETRIES)..."
+    echo -e "${CYAN}[*] Executing Pass 2: Agentic Correlation (Attempt $((RETRY_COUNT+1)) of $MAX_RETRIES)...${NC}"
+
+    INPUT_BYTES=$(wc -c < "$CASE_DIR/facts.json" 2>/dev/null || echo 0)
+    ESTIMATED_TOKENS=$((INPUT_BYTES / 4))
 
     set +e
     aider --model "$AI_MODEL" \
@@ -474,19 +499,16 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
       INVESTIGATION CONTEXT:
       $SCENARIO_CONTEXT
 
-      ANALYTICAL RULES:
-      1. INTENT VERDICT: Evaluate objectively. Avoid model default bias for C2/Exfiltration. 
-      2. THREE-TIER CONFIDENCE & VERDICT ALIGNMENT: 'presence_confidence' reflects certainty the artifact exists. 'execution_confidence' reflects evidence the tool was actively run. 'intent_confidence' reflects evidence it was used maliciously. CRITICAL: If you determine the final 'intent_verdict' is 'BENIGN' or 'Inconclusive', then NO individual artifact inside the matrix can have an 'intent_confidence' of 'High'. They must match the verdict.
-      3. NULL HYPOTHESIS: State the most plausible innocent explanation for the findings and explicitly support/refute it.
-      4. MITRE & TTPs: Treat all mappings as \"Candidate TTPs\". Map TTPs ONLY if execution_confidence is Medium/High. Do NOT hallucinate mappings (e.g., do not map GUI utilities like Task Manager, Skype, or Dropbox to command-line techniques like T1059).
-      5. EVIDENCE SPECIFICITY: Include exact file paths, timestamps, and extracted strings. Include MD5/SHA256 hashes where applicable.
-      6. ROLE ASSIGNMENT: Explicitly categorize identities, emails, and endpoints. Do not alternate between calling an account a 'service account' and a 'local user'—pick one definitive role based on facts.
-      7. NETWORK LOGIC CAVEAT: If network telemetry is missing, state: \"Network telemetry was unavailable for analysis.\"
-      8. PLACEHOLDER BAN & MANDATORY VALIDATION: Do not put PENDING or UNKNOWN in iocs arrays. Use empty arrays if no IOC exists. 'recommended_validation' must NEVER be left blank or written as 'None'. If an artifact is benign baseline activity, provide a concrete administrative validation step (e.g., 'Verify against gold image baseline' or 'Audit user deployment log').
-      9. COVERAGE MATRIX: Append to the summary: \"EVIDENCE COVERAGE MATRIX: [Filesystem: YES/NO] [Registry: YES/NO] [EventLogs: YES/NO] [NetworkLogs: YES/NO]\" (adjust YES/NO accordingly).
-      10. BROWSER EXTENSION BIAS: Do NOT assume randomized Chrome Extension IDs are benign 'standard customization'. If an ID cannot be verified, assign it a baseline suspicious risk score (e.g., 30) and set recommended_validation to 'Verify ID against Threat Intelligence.'
-      11. RISK SCORING CONSISTENCY: Do not assign arbitrary low scores (e.g., 5/100) to standard utilities while scoring others 0/100 without explicit justification. If an artifact is benign baseline activity, score it 0.
-      12. SERVICE ACCOUNT ABUSE: If 'intent_verdict' is set to 'Malicious', treat interactive applications under account names like 'defaultprinter' as defense evasion. If 'intent_verdict' is set to 'Benign', treat them consistently as misconfigurations across the entire report." \
+      CRITICAL FORENSIC RULES:
+      1. NULL HYPOTHESIS FIRST: Assume the system is benign until evidence disproves it. Known-good hashes, baseline OS files, and forensic image hashes are affirmative evidence supporting the null hypothesis. They are NOT Indicators of Compromise (IOCs).
+      2. METADATA IS NOT A FINDING: Do not score the Target IP address, Memory Image Hash, or System Hostname as findings. These are administrative data.
+      3. EVIDENCE REQUIREMENT: Every finding must reference at least one concrete artifact (e.g., file path, registry key, network connection). If no supporting artifact exists, you MUST NOT generate a finding. Do not infer or speculate.
+      4. EMPTY STATES ARE REQUIRED FOR BENIGN HOSTS: If no malicious activity is found, leave the arrays empty: {\"artifacts\": [], \"mitre_ttps\": []}. Do not invent data to mitigate schema population bias.
+      5. INTENT VERDICT: Evaluate objectively. Avoid model default bias for C2/Exfiltration. 
+      6. THREE-TIER CONFIDENCE ALIGNMENT: If the final 'intent_verdict' is 'BENIGN' or 'Inconclusive', NO artifact can have 'intent_confidence' of 'High'. They must match the verdict.
+      7. MITRE ACCURACY: Anti-forensic utilities map to T1070. Sniffing maps to T1040. Treat all as 'Candidate TTPs'. Do not map GUI utilities (Task Manager) to T1059.
+      8. FORENSIC DEFENSIBILITY & LANGUAGE LOCKDOWN: You are strictly forbidden from using definitive legal language. BAN: 'confirms', 'proves', 'suspect', 'attacker'. USE: 'evidence indicates', 'artifacts are consistent with'.
+      9. PRESENCE VS EXECUTION: Do not state a tool was 'utilized' unless Prefetch, Shimcache, Amcache, or Event Logs explicitly confirm it. Else state: 'Presence consistent with availability for use.'" \
       --yes-always --no-auto-commit \
       --read "$CASE_DIR/facts.json" \
       --read "$CASE_DIR/chain_of_custody.txt" \
@@ -494,189 +516,26 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
     AI_EXIT=$?
     set -e
 
+    echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"action\": \"aider_pass_2_correlation\", \"estimated_input_tokens\": $ESTIMATED_TOKENS, \"status\": \"completed\"}" >> "$CASE_DIR/actions.jsonl"
+
     if [ $AI_EXIT -ne 0 ]; then
-        echo "[-] WARNING: AI correlation pass failed (exit code: $AI_EXIT). Retrying..."
+        echo -e "${YELLOW}[-] WARNING: AI correlation pass failed (exit code: $AI_EXIT). Retrying...${NC}"
         RETRY_COUNT=$((RETRY_COUNT+1))
-        sleep "$RETRY_COOLDOWN"
+        echo -ne "${YELLOW}[*] Retrying in: ${NC}"
+	for i in $(seq "$RETRY_COOLDOWN" -1 1); do
+	    echo -ne "${YELLOW}$i... ${NC}"
+	    sleep 1
+	done
+	echo -e "${GREEN}Executing...${NC}"
         continue
     fi
 
-    echo "[*] Running autonomous schema validation..."
+    echo -e "${CYAN}[*] Running autonomous schema validation...${NC}"
     sed -i '/^```/d' "$CASE_DIR/triage_ledger.json" || true
 
-    python3 - "$CASE_DIR/facts.json" "$CASE_DIR/triage_ledger.json" <<'PY'
-import json
-import re
-import sys
-
-BENIGN_DOMAINS = {"gmail.com", "hotmail.com", "yahoo.com", "sbcglobal.net", 
-                  "nist.gov", "outlook.com", "protonmail.com", "proton.me",
-                  "google.com", "microsoft.com", "windows.com", "sourceforge.net",
-                  "bing.com", "live.com", "office.com", "apple.com", "mozilla.org"}
-
-facts_path, ledger_path = sys.argv[1], sys.argv[2]
-with open(facts_path, "r", encoding="utf-8") as f: facts = json.load(f)
-with open(ledger_path, "r", encoding="utf-8") as f: ledger = json.load(f)
-
-artifacts = ledger.get("artifacts", [])
-if not isinstance(artifacts, list): artifacts = []
-
-def normalize_str(v): return str(v or "").strip()
-
-def add_artifact_if_missing(
-    name, a_type, value, ioc_value, 
-    presence="High", 
-    exec_conf="None", 
-    intent="None", 
-    risk_score=60, 
-    priority="Medium", 
-    description="Recovered IOC."
-):
-    value_s = normalize_str(value)
-    if not value_s: return
-    low = value_s.lower()
-    for art in artifacts:
-        if normalize_str(art.get("value")).lower() == low:
-            iocs = art.get("iocs", [])
-            if not isinstance(iocs, list): iocs = []
-            if ioc_value and ioc_value not in iocs:
-                iocs.append(ioc_value)
-                art["iocs"] = iocs
-            return
-    artifacts.append({
-        "name": name, "type": a_type, "value": value_s, "description": description,
-        "presence_confidence": presence, "execution_confidence": exec_conf, "intent_confidence": intent, 
-        "recommended_validation": "Corroborate telemetry.",
-        "risk_score": int(risk_score), "priority": priority, "review_status": "pending",
-        "iocs": [ioc_value] if ioc_value else [],
-    })
-
-fact_iocs = []
-has_external_ip, has_internal_ip, has_domain, has_email = False, False, False, False
-actor_name, incident_type, case_desc = "", "", ""
-
-for fact in facts:
-    a_name, a_type, a_value = normalize_str(fact.get("artifact_name")), normalize_str(fact.get("artifact_type")), normalize_str(fact.get("artifact_value"))
-    if a_name == "Incident Type": incident_type = a_value
-    if a_name == "Case Description": case_desc = a_value
-    if a_name == "Attributed Human Actor": actor_name = a_value
-
-    iocs = fact.get("iocs", [])
-    if isinstance(iocs, list):
-        for i in iocs:
-            if normalize_str(i): fact_iocs.append((a_name, a_type, a_value, normalize_str(i)))
-
-    low_name = a_name.lower()
-    if "external ip" in low_name: has_external_ip = True
-    if "internal ip" in low_name: has_internal_ip = True
-    if low_name.endswith("email"): has_email = True
-    if a_name == "Domain": has_domain = True
-
-existing_iocs = {normalize_str(i).lower() for art in artifacts for i in art.get("iocs", []) if normalize_str(i)}
-
-for a_name, a_type, a_value, ioc in fact_iocs:
-    if ioc.lower() in existing_iocs: continue
-    low = a_name.lower()
-    if "ip" in low:
-        pri = "High" if "internal" in low else "Medium"
-        add_artifact_if_missing(a_name or "IP Address", "network_flow", ioc, ioc, risk_score=50, priority=pri)
-    elif "email" in low:
-        add_artifact_if_missing(a_name or "Observed Email", "email_header", ioc, ioc, risk_score=40, priority="Medium")
-    elif a_name == "Domain":
-        if ioc.lower() not in BENIGN_DOMAINS:
-            add_artifact_if_missing("Domain", "network_flow", ioc, ioc, risk_score=50, priority="Medium")
-    else:
-        add_artifact_if_missing(a_name or "Recovered IOC", a_type or "observed", a_value or ioc, ioc)
-    existing_iocs.add(ioc.lower())
-
-# FIX: Hard-Enforce Deterministic Hostnames (Anti-Typo)
-for fact in facts:
-    if fact.get("artifact_name") == "Hostname":
-        true_hostname = fact.get("artifact_value")
-        if true_hostname:
-            for art in artifacts:
-                if art.get("name") == "Hostname":
-                    art["value"] = true_hostname
-                    if true_hostname not in art.get("iocs", []):
-                        art["iocs"].append(true_hostname)
-
-# --- GLOBAL COHERENCE ENFORCEMENT ---
-verdict = normalize_str(ledger.get("intent_verdict")).lower()
-
-# Anti-Hallucination MITRE Filtering
-forbidden_gui_mappings = ["task manager", "taskmgr.exe", "skype", "dropbox", "onedrive", "cmd.lnk", "powershell.lnk"]
-if "mitre_ttps" in ledger and isinstance(ledger["mitre_ttps"], list):
-    # If the system is benign or artifacts are standard utilities, strip command interpreter TTPs
-    if verdict in ["benign", "inconclusive"] and "T1059" in ledger["mitre_ttps"]:
-        ledger["mitre_ttps"].remove("T1059")
-
-for art in artifacts:
-    art_val_lower = normalize_str(art.get("value")).lower()
-    art_name_lower = normalize_str(art.get("name")).lower()
-    art_desc_lower = normalize_str(art.get("description")).lower()
+    # Execute the isolated validation module
+    python3 run_validation.py "$CASE_DIR/facts.json" "$CASE_DIR/triage_ledger.json"
     
-    # 1. Force Validation steps to be populated if the LLM got lazy
-    if normalize_str(art.get("recommended_validation")).lower() in ["none", "", "null", "pending"]:
-        art["recommended_validation"] = "Cross-reference with workstation software deployment inventory."
-
-    # 2. Fix the Benign vs High Intent contradiction
-    if verdict in ["benign", "inconclusive"]:
-        if art.get("intent_confidence") == "High":
-            art["intent_confidence"] = "Low"
-        if art.get("priority") == "High" and art["risk_score"] < 20:
-            art["priority"] = "Low"
-            
-    # 3. Fix the Service Account Identity Whiplash
-    if "no evidence of service account" in art_desc_lower or verdict == "benign":
-        if "service" in art_name_lower:
-            art["name"] = "User Account Workspace Profile"
-
-summary = normalize_str(ledger.get("summary"))
-if actor_name and actor_name.lower() not in summary.lower():
-    summary = f"Attributed human actor identified: {actor_name}. " + summary
-
-target = normalize_str(ledger.get("target"))
-if (not target) or target.lower() == "unknown":
-    m = re.search(r"professor\s+([A-Z][a-z]+\s+[A-Z][a-z]+)", case_desc)
-    if m: target = m.group(1)
-
-evidence_mitre = set()
-ai_mitre = set(ledger.get("mitre_ttps", []))
-mitre_set = ai_mitre.union(evidence_mitre)
-
-verdict = normalize_str(ledger.get("intent_verdict")).lower()
-case_confidence = int(ledger.get("case_confidence", 0) or 0)
-for art in artifacts:
-    raw_risk = str(art.get("risk_score", "0"))
-    match = re.search(r"\d+", raw_risk)
-    risk_val = int(match.group()) if match else 0
-    art["risk_score"] = min(100, max(0, risk_val))
-    
-    # 🛡️ THE FIX: Global Stripper for low risk AND benign domains
-    art["iocs"] = [i for i in art.get("iocs", []) if i.lower() not in BENIGN_DOMAINS]
-    if art["risk_score"] < 20:
-        art["iocs"] = []
-
-ledger["summary"] = summary
-ledger["target"] = target or ledger.get("target", "Unknown")
-ledger["mitre_ttps"] = sorted(mitre_set)
-ledger["case_confidence"] = case_confidence
-ledger["artifacts"] = artifacts
-
-def scrub_latex(obj):
-    if isinstance(obj, str):
-        return re.sub(r"(?<!\\)\$([^$\n]+)(?<!\\)\$", r"\1", obj)
-    if isinstance(obj, list):
-        return [scrub_latex(item) for item in obj]
-    if isinstance(obj, dict):
-        return {key: scrub_latex(value) for key, value in obj.items()}
-    return obj
-
-ledger = scrub_latex(ledger)
-
-with open(ledger_path, "w", encoding="utf-8") as f: json.dump(ledger, f, indent=2)
-PY
-
     set +e
     python3 verify_schema.py "$CASE_DIR/triage_ledger.json" > /dev/null 2>&1; SCHEMA_EXIT=$?
     python3 -c "import json; json.load(open('$CASE_DIR/triage_ledger.json'))" > /dev/null 2>&1; JSON_EXIT=$?
@@ -684,32 +543,39 @@ PY
     set -e
 
     if [ $SCHEMA_EXIT -eq 0 ] && [ $JSON_EXIT -eq 0 ] && [ $CONTENT_EXIT -eq 0 ]; then
-        echo "[+] Forensic Quality Control: Schema validation passed successfully."
+        echo -e "${GREEN}[+] Forensic Quality Control: Schema validation passed successfully.${NC}"
         VALIDATION_PASSED=true
         break
     else
-        echo "[-] WARNING: Ledger validation failed. Initiating self-correction loop..."
+        echo -e "${YELLOW}[-] WARNING: Ledger validation failed. Initiating self-correction loop...${NC}"
         RETRY_COUNT=$((RETRY_COUNT+1))
-        sleep "$RETRY_COOLDOWN"
+        echo -ne "${YELLOW}[*] Retrying in: ${NC}"
+	for i in $(seq "$RETRY_COOLDOWN" -1 1); do
+	    echo -ne "${YELLOW}$i... ${NC}"
+	    sleep 1
+	done
+	echo -e "${GREEN}Executing...${NC}"
     fi
 done
 
 if [ "$VALIDATION_PASSED" = false ]; then
-    echo "[-] FATAL: AI agent failed to produce valid JSON after $MAX_RETRIES attempts. Aborting."
+    echo -e "${RED}[-] FATAL: AI agent failed to produce valid JSON after $MAX_RETRIES attempts. Aborting.${NC}"
     exit 1
 fi
-echo "[*] Phase 1 Complete. Initiating ${PHASE_1_COOLDOWN}-second API rate-limit adaptive cooldown..."
-sleep "$PHASE_1_COOLDOWN"
-
-
+echo -ne "${CYAN}[*] Phase 1 Complete. Initiating API adaptive cooldown: ${NC}"
+for i in $(seq "$PHASE_1_COOLDOWN" -1 1); do
+    echo -ne "${YELLOW}$i... ${NC}"
+    sleep 1
+done
+echo -e "${GREEN}Done!${NC}"
 
 # ==============================================================================
 # --- PHASE 2: SENIOR FORENSIC PEER REVIEW LOOP ---
 # ==============================================================================
 if [ "$ZERO_EVIDENCE" = true ]; then
-    echo "[*] PHASE 2: Skipping Senior Peer Review due to zero-evidence protocol."
+    echo -e "${CYAN}[*] PHASE 2: Skipping Senior Peer Review due to zero-evidence protocol.${NC}"
 else
-    echo "[*] Initializing Phase 2: Senior Forensic Peer Review Loop..."
+    echo -e "${CYAN}[*] Initializing Phase 2: Senior Forensic Peer Review Loop...${NC}"
     touch "$CASE_DIR/critique.txt"
 
     # AMNESIA PROTOCOL
@@ -726,6 +592,9 @@ else
         SKILL_FLAGS+=(--read "reference_material/sleuthkit/SKILL.md")
     fi
     SKILL_FLAGS+=(--read "reference_material/yara-hunting/SKILL.md")
+
+    INPUT_BYTES=$(wc -c < "$CASE_DIR/triage_ledger.json" 2>/dev/null || echo 0)
+    ESTIMATED_TOKENS=$((INPUT_BYTES / 4))
 
     set +e
     aider --model "$AI_MODEL" \
@@ -749,17 +618,22 @@ else
       --file "$CASE_DIR/critique.txt"
     set -e
 
+    echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"action\": \"aider_pass_3_peer_review_generation\", \"estimated_input_tokens\": $ESTIMATED_TOKENS, \"status\": \"completed\"}" >> "$CASE_DIR/actions.jsonl"
+
     if [ -f "$CASE_DIR/critique.txt" ]; then
-        echo "[!] Critical Logic Review Generated by Peer Agent:"
+        echo -e "${YELLOW}[!] Critical Logic Review Generated by Peer Agent:${NC}"
         cat "$CASE_DIR/critique.txt"
         echo "────────────────────────────────────────────────────────────────────────────────"
 
-        echo "[*] Re-engaging Agent to integrate Senior Review into Final Ledger..."
+        echo -e "${CYAN}[*] Re-engaging Agent to integrate Senior Review into Final Ledger...${NC}"
         cp "$CASE_DIR/triage_ledger.json" "$CASE_DIR/triage_ledger.json.bak"
 
         # AMNESIA PROTOCOL
         cat .aider.chat.history.md >> "$CASE_DIR/agent_transcript.md" 2>/dev/null || true
         rm -f .aider.chat.history.md
+
+        INPUT_BYTES=$(wc -c < "$CASE_DIR/critique.txt" 2>/dev/null || echo 0)
+        ESTIMATED_TOKENS=$((INPUT_BYTES / 4))
 
         aider --model "$AI_MODEL" \
           --map-tokens 0 \
@@ -772,33 +646,40 @@ else
           --read "$CASE_DIR/facts.json" \
           --file "$CASE_DIR/triage_ledger.json"
 
-        echo "[*] Running Post-Review Schema Validation..."
-        sed -i '/^```/d' "$CASE_DIR/triage_ledger.json" || true
+        echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"action\": \"aider_pass_4_peer_review_integration\", \"estimated_input_tokens\": $ESTIMATED_TOKENS, \"status\": \"completed\"}" >> "$CASE_DIR/actions.jsonl"
+
+        echo -e "${CYAN}[*] Running Post-Review Schema Validation...${NC}"
+        sed -i '/^
+```/d' "$CASE_DIR/triage_ledger.json" || true
 
         if python3 verify_schema.py "$CASE_DIR/triage_ledger.json" > /dev/null 2>&1 && \
            python3 -c "import json; json.load(open('$CASE_DIR/triage_ledger.json'))" > /dev/null 2>&1; then
-            echo "[+] Post-Review validation passed."
+            echo -e "${GREEN}[+] Post-Review validation passed.${NC}"
             rm "$CASE_DIR/triage_ledger.json.bak"
         else
-            echo "[-] 🚨 WARNING: Peer review integration broke the JSON schema! Reverting..."
+            echo -e "${RED}[-] 🚨 WARNING: Peer review integration broke the JSON schema! Reverting...${NC}"
             mv "$CASE_DIR/triage_ledger.json.bak" "$CASE_DIR/triage_ledger.json"
         fi
     fi
 
     echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"actor\": \"AI_AGENT\", \"action\": \"Successfully integrated peer review feedback.\"}" >> "$CASE_DIR/actions.jsonl"
 fi
+
 # ==============================================================================
-# --- PHASE 1.C: ATTACK TIMELINE RECONSTRUCTION (MOVED TO POST-REVIEW) ---
+# --- PHASE 1.C: ATTACK TIMELINE RECONSTRUCTION ---
 # ==============================================================================
 if [ "$ZERO_EVIDENCE" = true ]; then
-    echo "[*] PASS 1.C: Skipping timeline reconstruction due to zero-evidence protocol."
+    echo -e "${CYAN}[*] PASS 1.C: Skipping timeline reconstruction due to zero-evidence protocol.${NC}"
 else
-    echo "[*] PASS 1.C: Attack Timeline Reconstruction Engine Running..."
+    echo -e "${CYAN}[*] PASS 1.C: Attack Timeline Reconstruction Engine Running...${NC}"
     echo "[]" > "$CASE_DIR/timeline.json"
 
     # AMNESIA PROTOCOL
     cat .aider.chat.history.md >> "$CASE_DIR/agent_transcript.md" 2>/dev/null || true
     rm -f .aider.chat.history.md
+
+    INPUT_BYTES=$(wc -c < "$CASE_DIR/facts.json" 2>/dev/null || echo 0)
+    ESTIMATED_TOKENS=$((INPUT_BYTES / 4))
 
     set +e
     aider --model "$AI_MODEL" \
@@ -816,10 +697,12 @@ else
       'confidence' (Low/Medium/High — how certain is this sequencing).
 
       CRITICAL FORENSIC RULES: 
-      1. STRICT EXECUTION DEPENDENCY: If an artifact in 'triage_ledger.json' has an 'execution_confidence' of 'Low' or 'None' (e.g., a .lnk shortcut file or a .zip archive), you MUST state 'User staged/downloaded [Tool]' or 'Presence of shortcut to [Tool]'. You are strictly forbidden from stating the user 'executed', 'ran', or 'utilized' the tool.
-      2. ANTI-HALLUCINATION: Do NOT invent cloud uploads, exfiltration, or network activity if the ledger states network telemetry is missing.
-      3. RAW JSON ONLY: No markdown backticks. All strings single-line.
-      4. STRICT MITRE MAPPING: Do not map Windows GUI utilities (like Task Manager) to T1059. Only map TTPs if the specific criteria of the technique are explicitly met by the evidence." \
+      1. THREAT ACTOR ACTIVITY ONLY: The timeline must strictly contain events executed by the system or a threat actor. Never log the investigator's actions (e.g., 'Memory image captured', 'System identified', 'Hashes verified').
+      2. EMPTY STATES ARE REQUIRED FOR BENIGN HOSTS: If no malicious/suspicious activity is found, leave the JSON array completely empty: []. Do not invent data.
+      3. STRICT EXECUTION DEPENDENCY: If an artifact in 'triage_ledger.json' has 'execution_confidence' of 'Low' or 'None', you MUST state 'User staged/downloaded [Tool]' or 'Presence of [Tool]'. Do not state it was executed.
+      4. TEMPORAL ACCURACY: If a specific date/timestamp is visible, prepend it: '[2026-06-12 14:00:00] ...'
+      5. EPISTEMOLOGICAL RESTRAINT: NEVER use definitive action verbs like 'User exfiltrated'. Always use 'Evidence indicates likely data transfer via...'.
+      6. RAW JSON ONLY: No markdown backticks. All strings single-line." \
       --yes-always \
       --no-auto-commit \
       --read "$CASE_DIR/facts.json" \
@@ -827,21 +710,24 @@ else
       --file "$CASE_DIR/timeline.json"
     set -e
 
+    echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"action\": \"aider_pass_5_timeline_reconstruction\", \"estimated_input_tokens\": $ESTIMATED_TOKENS, \"status\": \"completed\"}" >> "$CASE_DIR/actions.jsonl"
+
     sed -i '/^```/d' "$CASE_DIR/timeline.json" || true
     if ! python3 -c "import json; json.load(open('$CASE_DIR/timeline.json'))" > /dev/null 2>&1; then
-        echo "[-] WARNING: Timeline JSON malformed — resetting to safe fallback."
+        echo -e "${YELLOW}[-] WARNING: Timeline JSON malformed — resetting to safe fallback.${NC}"
         echo '[{"sequence": 1, "event_description": "Timeline reconstruction failed — insufficient data.", "artifacts_involved": [], "mitre_ttp": "", "confidence": "Low"}]' > "$CASE_DIR/timeline.json"
     fi
 
     echo "{\"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\", \"actor\": \"AI_AGENT\", \"action\": \"Completed Pass 1.C: Timeline Reconstruction.\"}" >> "$CASE_DIR/actions.jsonl"
 fi
+
 # ==============================================================================
 # --- PHASE 3: HUMAN EXAMINER CHECKPOINT ---
 # ==============================================================================
 echo ""
-echo "========================================================"
-echo "    ⚠️  CRITICAL CHECKPOINT: HUMAN EXAMINER REVIEW ⚠️"
-echo "========================================================"
+echo -e "${BOLD}${YELLOW}========================================================${NC}"
+echo -e "${BOLD}${YELLOW}    ⚠️  CRITICAL CHECKPOINT: HUMAN EXAMINER REVIEW ⚠️${NC}"
+echo -e "${BOLD}${YELLOW}========================================================${NC}"
 printf "Type 'APPROVE' to authorize final report generation: "
 read -r USER_INPUT
 
@@ -849,7 +735,8 @@ if [ "$USER_INPUT" == "APPROVE" ]; then
     sed -i 's/DRAFT_//g' "$CASE_DIR/triage_ledger.json"
     sed -i 's/PENDING_HUMAN_REVIEW/APPROVED_BY_EXAMINER/g' "$CASE_DIR/triage_ledger.json"
     
-    echo "[*] Performing final renderer-safe ledger cleanup..."
+    echo -e "${CYAN}[*] Performing final renderer-safe ledger cleanup...${NC}"
+    
     python3 - "$CASE_DIR/triage_ledger.json" <<'PY'
 import json
 import re
@@ -859,6 +746,13 @@ path = sys.argv[1]
 
 def normalize_str(v): 
     return str(v or "").strip()
+
+def sanitize_for_markdown_table(text, max_len=80):
+    if not isinstance(text, str): return text
+    clean_text = text.replace('\n', ' ').replace('\r', ' ').replace('|', '&#124;')
+    if len(clean_text) > max_len:
+        return clean_text[:max_len-3] + "..."
+    return clean_text
 
 def scrub(obj):
     if isinstance(obj, str):
@@ -889,6 +783,9 @@ for artifact in ledger.get("artifacts", []):
     risk_val = min(100, max(0, int(match.group()) if match else 0))
     artifact["risk_score"] = risk_val
     
+    artifact["value"] = sanitize_for_markdown_table(artifact.get("value", ""), 80)
+    artifact["description"] = sanitize_for_markdown_table(artifact.get("description", ""), 120)
+    
     if verdict in ["benign", "inconclusive"]:
         artifact["intent_confidence"] = "Low"
         if risk_val < 20:
@@ -897,9 +794,19 @@ for artifact in ledger.get("artifacts", []):
     if normalize_str(artifact.get("recommended_validation")).lower() in ["none", "", "null", "pending"]:
         artifact["recommended_validation"] = "Cross-reference with workstation software deployment inventory."
     
-    artifact["iocs"] = [i for i in artifact.get("iocs", []) if i.lower() not in BENIGN_DOMAINS]
-    if risk_val < 20:
-        artifact["iocs"] = []
+    clean_iocs = []
+    for i in artifact.get("iocs", []):
+        i_str = str(i).strip()
+        if i_str.lower() not in BENIGN_DOMAINS and "/" not in i_str and "\\" not in i_str:
+            clean_iocs.append(i_str)
+            
+    blob = artifact.get("value", "") + " " + artifact.get("description", "")
+    missed_hashes = re.findall(r"\b[a-fA-F0-9]{32}\b|\b[a-fA-F0-9]{40}\b|\b[a-fA-F0-9]{64}\b", blob)
+    for h in missed_hashes:
+        if h not in clean_iocs and risk_val >= 21:
+            clean_iocs.append(h)
+            
+    artifact["iocs"] = clean_iocs
 
 ledger = scrub(ledger)
 
@@ -912,8 +819,8 @@ PY
     mkdir -p "$CASE_DIR/reports"
     mv exports/*.pdf "$CASE_DIR/reports/" 2>/dev/null || true
     cp .aider.chat.history.md "$CASE_DIR/reports/agent_transcript.md" 2>/dev/null || true
-    echo "[+] PIPELINE COMPLETE. Final verified artifact saved to $CASE_DIR/reports/"
+    echo -e "${GREEN}[+] PIPELINE COMPLETE. Final verified artifact saved to $CASE_DIR/reports/${NC}"
 else
-    echo "[-] Investigation Paused / AI Re-prompted based on human rejection."
+    echo -e "${RED}[-] Investigation Paused / AI Re-prompted based on human rejection.${NC}"
     exit 1
 fi

@@ -13,15 +13,23 @@ __pycache__/
 *.img
 *.pcap
 *memory_scan_results.txt
-*.e01
+*.[eE]01
 *.zip
 *.edb
 *.ost
+*.csv
 
-# Ignore the messy extraction folders
-cases/*/extractions/
+# Ignore the entire data directory EXCEPT the specific log files we want
+data/
 
-# KEEP STRUCTURED LOGS FOR JUDGES (Hackathon Requirement)
-!cases/*/triage_ledger.json
-!cases/*/actions.jsonl
-!cases/*/critique.txt
+# FORCE KEEP STRUCTURED LOGS FOR JUDGES (Hackathon Requirement)
+# (If you ended up naming the folder 'cases' instead of 'data', 
+# change 'data' to 'cases' in the lines below and above)
+!data/
+!data/*/
+!data/*/triage_ledger.json
+!data/*/actions.jsonl
+!data/*/critique.txt
+
+# Ignore messy extraction folders specifically
+data/*/extractions/

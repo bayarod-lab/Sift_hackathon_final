@@ -1,8 +1,0 @@
-AUDIT NOTES - VIGIA-REAL-009
-Reviewer: Senior DFIR Examiner
-
-1. Memory Analysis Oversight: You completely omitted the findings from ART-004 (Memory Analysis). This is a critical failure. The memory artifacts provide the definitive link between the user (UID 501) and the exfiltrated data resident in RAM. Without this, your attribution is weak.
-
-2. Exploit Chain Context: You identified the execution of './root.sh', but failed to document the source of the exploit (the 'wget' from Metasploit). This is not just a command execution; it is a clear indicator of a deliberate, multi-stage attack chain. You must document the acquisition phase to establish intent.
-
-3. Exfiltration Methodology: While you noted the proxy configuration, you missed the nuance of the camouflage. The evidence suggests the actor specifically chose to blend exfiltration traffic with standard web traffic. This is a tactical choice to evade detection, not just a configuration step.
