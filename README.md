@@ -16,7 +16,7 @@ As requested by the organizers, the following components are included in this su
 **Elevator Pitch:** An experimental proof-of-concept orchestrator that automates the initial "first pass" of digital evidence triage using strict read-only constraints. Built for the SANS FIND EVIL Hackathon 2026.
 
 ### 🔗 Official Submission Links
-* **Devpost Project Page:** [Insert Devpost URL Here]
+* **Devpost Project Page:** [https://devpost.com/software/autonomous-dfir-triage-pipeline]
 * **Demonstration Video:** [https://youtu.be/aQvzBe00tM8] 
 * **GitHub Repository:** [https://github.com/bayarod-lab/Sift_hackathon](https://github.com/bayarod-lab/Sift_hackathon) 
 
