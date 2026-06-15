@@ -39,9 +39,9 @@ The bash orchestrator (`analyze.sh`) extracts data using OS-level SIFT tools (`f
 * **API Rate-Limit Guardrails:** Separates execution speed from the model type. Users on free API tiers are protected by automated 45-second fallback cooldown buffers to proactively block `429 Resource Exhausted` errors.
 * **Multi-Pass "Peer Review":** Ingestion tasks map across distinct logical levels. An initial loop extracts IOCs, a second builds the ledger, and a third spawns a "Senior Forensic Review" prompt that critiques the raw findings, flags unsupported MITRE mappings, and forces a self-correction pass.
 * **Basic Schema Validation:** Uses programmatic Python validation paired with regex (`sed`) to automatically strip out LLM markdown pollution or broken JSON structures, forcing retries if the schema breaks.
-* **Deterministic OSINT Integration:** Automatically scrapes extracted MD5/SHA256 hashes and queries the VirusTotal API (`check_hashes.py`) to inject confirmed cryptographic threat intelligence directly into the AI's fact graph prior to analysis[cite: 3].
-* **Adversarial Hunt Pass:** Executes a specialized `Pass 1.D` agent explicitly instructed to hunt for high-severity MITRE TTPs (e.g., DLL sideloading, double extensions, masqueraded system binaries) to counter the AI's baseline null-hypothesis bias during the final correlation phase[cite: 3].
-* **Automated Network Parsing:** Detects `.pcap` and `.pcapng` telemetry targets and autonomously streams protocol hierarchies, DNS queries, and TLS SNI artifacts via `tshark` directly into the agent's context window[cite: 3].
+* **Deterministic OSINT Integration:** Automatically scrapes extracted MD5/SHA256 hashes and queries the VirusTotal API (check_hashes.py) to inject confirmed cryptographic threat intelligence directly into the AI's fact graph prior to analysis.  
+* **Adversarial Hunt Pass:** Executes a specialized Pass 1.D agent explicitly instructed to hunt for high-severity MITRE TTPs (e.g., DLL sideloading, double extensions, masqueraded system binaries) to counter the AI's baseline null-hypothesis bias during the final correlation phase.  
+* **Automated Network Parsing:** Detects .pcap and .pcapng telemetry targets and autonomously streams protocol hierarchies, DNS queries, and TLS SNI artifacts via tshark directly into the agent's context window.
 
 ---
 
@@ -60,22 +60,27 @@ This platform is optimized for native Linux environments and purpose-built for t
 ### 1. Ingest System Dependencies
 Ensure you have Python 3 installed. Install the background forensic utilities, compression layouts, and PDF rendering backends required by your host system:
 
-Bash
+```bash
 sudo apt-get update && sudo apt-get install -y python3-weasyprint pango1.0-tools p7zip-full ewf-tools sleuthkit
-2. Clone the Repository
-Bash
+```
+
+### 2. Clone the Repository
+```bash
 git clone [https://github.com/bayarod-lab/Sift_hackathon.git](https://github.com/bayarod-lab/Sift_hackathon.git)
 cd Sift_hackathon
-3. Install Package Frameworks
-Install the corresponding underlying Python reporting and agentic automation scripts:
+```
 
-Bash
+### 3. Install Package Frameworks
+Install the corresponding underlying Python reporting and agentic automation scripts:  
+```bash
 pip3 install weasyprint aider-chat litellm
-4. Configure Authentication & Workspace Parameters
-Export your variables and testing configurations directly into your open shell session.
-(Note for Judges: You must supply a valid Google AI Studio API key with internet access to run the cognitive reasoning engine locally).
+```
 
-Bash
+### 4. Configure Authentication & Workspace Parameters
+Export your variables and testing configurations directly into your open shell session. 
+*(Note for Judges: You must supply a valid Google AI Studio API key with internet access to run the cognitive reasoning engine locally).*
+
+```bash
 # Set your active Google AI Studio Key
 export GEMINI_API_KEY="your-api-key"
 
@@ -87,33 +92,41 @@ export API_TIER="FREE"
 
 # [Optional] Set VirusTotal API Key for cryptographic hash reputation checks
 export VT_API_KEY="your-vt-key"
-🚀 Usage Guide (Local Execution)
+```
+
+---
+
+## 🚀 Usage Guide (Local Execution)
+
 The triage workspace executes via a single orchestrator loop. Pass your direct path vector target as an input parameter argument.
 
-To execute analysis on standard VIGÍA telemetry cases:
-
-Bash
+**To execute analysis on standard VIGÍA telemetry cases:**
+```bash
 ./analyze.sh "reference_material/telemetry_source.json"
-To process a compressed forensic archive matrix (e.g., memory dumps or triaged collections):
+```
 
-Bash
+**To process a compressed forensic archive matrix (e.g., memory dumps or triaged collections):**
+```bash
 ./analyze.sh "evidence/Rocba-Memory.zip"
-To handle raw disk capture structures (E01) via automated mount logic:
+```
 
-Bash
+**To handle raw disk capture structures (E01) via automated mount logic:**
+```bash
 sudo -E ./analyze.sh "evidence/rocba-cdrive.e01"
-(Note: Executing against .e01 elements requires passing sudo -E to provide structural device mounting permissions while cleanly maintaining your environmental variables for the AI engine).
+```
+*(Note: Executing against `.e01` elements requires passing `sudo -E` to provide structural device mounting permissions while cleanly maintaining your environmental variables for the AI engine).*
 
-📜 Audit & Execution Logs
+---
+## 📜 Audit & Execution Logs
+
 All automated workflows enforce an append-only transaction layer. Judges can trace any finding back to the specific iteration-over-iteration trace that produced it, complete with estimated token tracking.
 
-Tool Execution & Token Tracking: cases/INC-2026-[CASE_NAME]/actions.jsonl
+* **Tool Execution & Token Tracking:** `cases/INC-2026-[CASE_NAME]/actions.jsonl`
+* **Cryptographic Intake Hashes:** `cases/INC-2026-[CASE_NAME]/chain_of_custody.txt`
+* **Agent-to-Agent Logic Critiques:** `cases/INC-2026-[CASE_NAME]/critique.txt`
+* **Final Verified Forensic Ledger:** `cases/INC-2026-[CASE_NAME]/triage_ledger.json`
 
-Cryptographic Intake Hashes: cases/INC-2026-[CASE_NAME]/chain_of_custody.txt
+---
 
-Agent-to-Agent Logic Critiques: cases/INC-2026-[CASE_NAME]/critique.txt
-
-Final Verified Forensic Ledger: cases/INC-2026-[CASE_NAME]/triage_ledger.json
-
-⚖️ License
-This pipeline framework is open-source distribution software covered under the provisions of the MIT License.
+## ⚖️ License
+This pipeline framework is open-source distribution software covered under the provisions of the [MIT License](LICENSE).
