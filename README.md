@@ -66,8 +66,8 @@ sudo apt-get update && sudo apt-get install -y python3-weasyprint pango1.0-tools
 
 ### 2. Clone the Repository
 ```bash
-git clone [https://github.com/bayarod-lab/Sift_hackathon.git](https://github.com/bayarod-lab/Sift_hackathon.git)
-cd Sift_hackathon
+git clone [https://github.com/bayarod-lab/Sift_hackathon_final.git](https://github.com/bayarod-lab/Sift_hackathon_final.git)
+cd Sift_hackathon_final
 ```
 
 ### 3. Install Package Frameworks
@@ -78,7 +78,7 @@ pip3 install weasyprint aider-chat litellm
 
 ### 4. Configure Authentication & Workspace Parameters
 Export your variables and testing configurations directly into your open shell session. 
-*(Note for Judges: You must supply a valid Google AI Studio API key with internet access to run the cognitive reasoning engine locally).*
+*(Note for Judges: You must supply a valid Google AI Studio API key with internet access to run the cognitive reasoning engine locally.You can procure a free-tier key in 60 seconds at aistudio.google.com. Alternatively, you can evaluate the complete, pre-populated pipeline execution logs and PDFs located in the /cases/ directory of this repository without needing an API key).*
 
 ```bash
 # Set your active Google AI Studio Key
