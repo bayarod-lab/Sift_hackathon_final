@@ -18,7 +18,7 @@ As requested by the organizers, the following components are included in this su
 ### 🔗 Official Submission Links
 * **Devpost Project Page:** [https://devpost.com/software/autonomous-dfir-triage-pipeline]
 * **Demonstration Video:** [https://youtu.be/aQvzBe00tM8] 
-* **GitHub Repository:** [https://github.com/bayarod-lab/Sift_hackathon](https://github.com/bayarod-lab/Sift_hackathon) 
+* **GitHub Repository:** [ https://github.com/bayarod-lab/Sift_hackathon_final]( https://github.com/bayarod-lab/Sift_hackathon_final)
 
 --- 
 
